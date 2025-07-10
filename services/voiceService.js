@@ -6,12 +6,32 @@ class VoiceService {
     constructor() {
         console.log('VoiceService constructor - OPENAI_API_KEY:', process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.substring(0, 20) + '...' : 'NOT SET');
         console.log('VoiceService constructor - GITHUB_TOKEN:', process.env.GITHUB_TOKEN ? process.env.GITHUB_TOKEN.substring(0, 20) + '...' : 'NOT SET');
+        console.log('🎭 VoiceService using voice:', this.voiceModel);
         
         this.openai = new OpenAI({
             apiKey: process.env.OPENAI_API_KEY
         });
-        this.voiceModel = process.env.VOICE_MODEL || 'alloy';
         this.voiceSpeed = parseFloat(process.env.VOICE_SPEED) || 1.0;
+        
+        // Available OpenAI TTS voices
+        this.availableVoices = [
+            'alloy', 'ash', 'ballad', 'coral', 'echo', 
+            'fable', 'nova', 'onyx', 'sage', 'shimmer'
+        ];
+        
+        // Select random voice for this service instance
+        this.voiceModel = this.selectRandomVoice();
+    }
+
+    selectRandomVoice() {
+        // Check if a specific voice is requested via environment variable
+        if (process.env.VOICE_MODEL && this.availableVoices.includes(process.env.VOICE_MODEL)) {
+            return process.env.VOICE_MODEL;
+        }
+        
+        // Otherwise, select a random voice
+        const randomIndex = Math.floor(Math.random() * this.availableVoices.length);
+        return this.availableVoices[randomIndex];
     }
 
     /**

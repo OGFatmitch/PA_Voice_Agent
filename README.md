@@ -154,8 +154,18 @@ The system uses OpenAI's GPT-4o Mini TTS model with 11 built-in voices:
 - **shimmer** - Light, airy voice
 
 Configure the voice in your `.env` file:
+
+**Random Voice Selection (Default):**
 ```
-VOICE_MODEL=alloy
+# Leave empty for random voice selection
+VOICE_MODEL=
+VOICE_SPEED=1.0
+```
+
+**Fixed Voice Selection:**
+```
+# Choose a specific voice
+VOICE_MODEL=echo
 VOICE_SPEED=1.0
 ```
 

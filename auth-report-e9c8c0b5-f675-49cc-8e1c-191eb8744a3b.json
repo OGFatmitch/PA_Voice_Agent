@@ -1,0 +1,191 @@
+{
+  "reportId": "AUTH-E9C8C0B5",
+  "generatedAt": "2025-07-10T21:31:38.324Z",
+  "summary": {
+    "sessionId": "e9c8c0b5-f675-49cc-8e1c-191eb8744a3b",
+    "memberName": "Jane Smith",
+    "dateOfBirth": "1975-06-15",
+    "drugName": "Ozempic",
+    "drugCategory": {
+      "category": "GLP-1 Receptor Agonist",
+      "indication": "Type 2 Diabetes",
+      "requiresAuth": true
+    },
+    "status": "active",
+    "decision": "deny",
+    "decisionReason": "Based on clinical criteria evaluation",
+    "answers": {
+      "diagnosis": "Type 2 Diabetes",
+      "a1c_level": "8.5",
+      "bmi_level": "yes"
+    },
+    "validation": {
+      "valid": true,
+      "errors": [],
+      "session": {
+        "id": "e9c8c0b5-f675-49cc-8e1c-191eb8744a3b",
+        "createdAt": "2025-07-10T21:31:38.323Z",
+        "status": "active",
+        "step": "complete",
+        "memberName": "Jane Smith",
+        "dateOfBirth": "1975-06-15",
+        "drugName": "Ozempic",
+        "drugId": "ozempic",
+        "currentQuestionId": null,
+        "answers": {
+          "diagnosis": "Type 2 Diabetes",
+          "a1c_level": "8.5",
+          "bmi_level": "yes"
+        },
+        "questionFlow": [
+          {
+            "id": "diagnosis",
+            "text": "What is the primary diagnosis for this patient?",
+            "type": "multiple_choice",
+            "options": [
+              "Type 2 Diabetes",
+              "Type 1 Diabetes",
+              "Obesity",
+              "Other"
+            ],
+            "next": {
+              "Type 2 Diabetes": "a1c_level",
+              "Type 1 Diabetes": "deny",
+              "Obesity": "bmi_level",
+              "Other": "deny"
+            },
+            "required": true
+          },
+          {
+            "id": "a1c_level",
+            "text": "What is the patient's most recent A1C level?",
+            "type": "numeric",
+            "unit": "%",
+            "next": {
+              "range": {
+                "min": 6.5,
+                "max": 15,
+                "next": "current_medications"
+              },
+              "default": "deny"
+            },
+            "required": true
+          },
+          {
+            "id": "bmi_level",
+            "text": "What is the patient's current BMI?",
+            "type": "numeric",
+            "unit": "kg/m²",
+            "next": {
+              "range": {
+                "min": 30,
+                "max": 100,
+                "next": "current_medications"
+              },
+              "default": "deny"
+            },
+            "required": true
+          },
+          {
+            "id": "current_medications",
+            "text": "Is the patient currently taking any diabetes medications?",
+            "type": "yes_no",
+            "next": {
+              "yes": "list_medications",
+              "no": "step_1_required"
+            },
+            "required": true
+          },
+          {
+            "id": "list_medications",
+            "text": "Please list the current diabetes medications the patient is taking.",
+            "type": "text",
+            "next": "step_1_required",
+            "required": true
+          },
+          {
+            "id": "step_1_required",
+            "text": "Has the patient tried and failed at least one step 1 medication such as metformin, sulfonylurea, or DPP-4 inhibitor?",
+            "type": "yes_no",
+            "next": {
+              "yes": "step_1_failure",
+              "no": "deny"
+            },
+            "required": true
+          },
+          {
+            "id": "step_1_failure",
+            "text": "Please describe the step 1 medication failure including duration of therapy and reason for discontinuation.",
+            "type": "text",
+            "next": "contraindications",
+            "required": true
+          },
+          {
+            "id": "contraindications",
+            "text": "Does the patient have any contraindications to GLP-1 receptor agonists such as personal or family history of medullary thyroid carcinoma or multiple endocrine neoplasia syndrome type 2?",
+            "type": "yes_no",
+            "next": {
+              "yes": "deny",
+              "no": "approve"
+            },
+            "required": true
+          }
+        ],
+        "currentQuestionIndex": 2,
+        "decision": "deny",
+        "decisionReason": "Based on clinical criteria evaluation",
+        "updatedAt": "2025-07-10T21:31:38.323Z"
+      }
+    },
+    "createdAt": "2025-07-10T21:31:38.323Z",
+    "completedAt": "2025-07-10T21:31:38.323Z"
+  },
+  "questionResponses": [
+    {
+      "questionNumber": 1,
+      "question": "What is the primary diagnosis for this patient?",
+      "answer": "Type 2 Diabetes",
+      "questionType": "multiple_choice",
+      "required": true
+    },
+    {
+      "questionNumber": 2,
+      "question": "What is the patient's most recent A1C level?",
+      "answer": "8.5",
+      "questionType": "numeric",
+      "required": true
+    },
+    {
+      "questionNumber": 3,
+      "question": "What is the patient's current BMI?",
+      "answer": "yes",
+      "questionType": "numeric",
+      "required": true
+    }
+  ],
+  "clinicalCriteria": {
+    "diagnosis": {
+      "value": "Type 2 Diabetes",
+      "met": true
+    },
+    "severity": {
+      "value": "yes",
+      "met": false
+    },
+    "duration": null,
+    "previousTherapy": null,
+    "contraindications": null
+  },
+  "recommendations": [
+    {
+      "type": "alternative",
+      "message": "Consider alternative treatment options within formulary",
+      "priority": "high"
+    },
+    {
+      "type": "appeal",
+      "message": "Submit additional clinical documentation for reconsideration if appropriate",
+      "priority": "medium"
+    }
+  ]
+}

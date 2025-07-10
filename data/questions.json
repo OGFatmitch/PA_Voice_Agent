@@ -1,0 +1,719 @@
+{
+  "questionSets": {
+    "diabetes_glp1": {
+      "name": "GLP-1 Receptor Agonist Authorization",
+      "questions": [
+        {
+          "id": "diagnosis",
+          "text": "What is the primary diagnosis for this patient?",
+          "type": "multiple_choice",
+          "options": [
+            "Type 2 Diabetes",
+            "Type 1 Diabetes",
+            "Obesity",
+            "Other"
+          ],
+          "next": {
+            "Type 2 Diabetes": "a1c_level",
+            "Type 1 Diabetes": "deny",
+            "Obesity": "bmi_level",
+            "Other": "deny"
+          },
+          "required": true
+        },
+        {
+          "id": "a1c_level",
+          "text": "What is the patient's most recent A1C level?",
+          "type": "numeric",
+          "unit": "%",
+          "next": {
+            "range": {
+              "min": 6.5,
+              "max": 15.0,
+              "next": "current_medications"
+            },
+            "default": "deny"
+          },
+          "required": true
+        },
+        {
+          "id": "bmi_level",
+          "text": "What is the patient's current BMI?",
+          "type": "numeric",
+          "unit": "kg/m²",
+          "next": {
+            "range": {
+              "min": 30,
+              "max": 100,
+              "next": "current_medications"
+            },
+            "default": "deny"
+          },
+          "required": true
+        },
+        {
+          "id": "current_medications",
+          "text": "Is the patient currently taking any diabetes medications?",
+          "type": "yes_no",
+          "next": {
+            "yes": "list_medications",
+            "no": "step_1_required"
+          },
+          "required": true
+        },
+        {
+          "id": "list_medications",
+          "text": "Please list the current diabetes medications the patient is taking.",
+          "type": "text",
+          "next": "step_1_required",
+          "required": true
+        },
+        {
+          "id": "step_1_required",
+          "text": "Has the patient tried and failed at least one step 1 medication such as metformin, sulfonylurea, or DPP-4 inhibitor?",
+          "type": "yes_no",
+          "next": {
+            "yes": "step_1_failure",
+            "no": "deny"
+          },
+          "required": true
+        },
+        {
+          "id": "step_1_failure",
+          "text": "Please describe the step 1 medication failure including duration of therapy and reason for discontinuation.",
+          "type": "text",
+          "next": "contraindications",
+          "required": true
+        },
+        {
+          "id": "contraindications",
+          "text": "Does the patient have any contraindications to GLP-1 receptor agonists such as personal or family history of medullary thyroid carcinoma or multiple endocrine neoplasia syndrome type 2?",
+          "type": "yes_no",
+          "next": {
+            "yes": "deny",
+            "no": "approve"
+          },
+          "required": true
+        }
+      ]
+    },
+    "biologic_anti_tnf": {
+      "name": "Anti-TNF Biologic Authorization",
+      "questions": [
+        {
+          "id": "diagnosis",
+          "text": "What is the primary diagnosis for this patient?",
+          "type": "multiple_choice",
+          "options": [
+            "Rheumatoid Arthritis",
+            "Psoriatic Arthritis",
+            "Ankylosing Spondylitis",
+            "Crohn's Disease",
+            "Ulcerative Colitis",
+            "Psoriasis",
+            "Other"
+          ],
+          "next": {
+            "Rheumatoid Arthritis": "disease_duration",
+            "Psoriatic Arthritis": "disease_duration",
+            "Ankylosing Spondylitis": "disease_duration",
+            "Crohn's Disease": "disease_duration",
+            "Ulcerative Colitis": "disease_duration",
+            "Psoriasis": "psoriasis_severity",
+            "Other": "deny"
+          },
+          "required": true
+        },
+        {
+          "id": "disease_duration",
+          "text": "How long has the patient had this condition?",
+          "type": "multiple_choice",
+          "options": [
+            "Less than 6 months",
+            "6-12 months",
+            "1-2 years",
+            "More than 2 years"
+          ],
+          "next": {
+            "Less than 6 months": "deny",
+            "6-12 months": "conventional_therapy",
+            "1-2 years": "conventional_therapy",
+            "More than 2 years": "conventional_therapy"
+          },
+          "required": true
+        },
+        {
+          "id": "psoriasis_severity",
+          "text": "What is the severity of the patient's psoriasis?",
+          "type": "multiple_choice",
+          "options": [
+            "Mild (less than 3% body surface area)",
+            "Moderate (3-10% body surface area)",
+            "Severe (more than 10% body surface area)"
+          ],
+          "next": {
+            "Mild (less than 3% body surface area)": "deny",
+            "Moderate (3-10% body surface area)": "conventional_therapy",
+            "Severe (more than 10% body surface area)": "conventional_therapy"
+          },
+          "required": true
+        },
+        {
+          "id": "conventional_therapy",
+          "text": "Has the patient tried and failed conventional therapy?",
+          "type": "yes_no",
+          "next": {
+            "yes": "list_conventional_therapies",
+            "no": "deny"
+          },
+          "required": true
+        },
+        {
+          "id": "list_conventional_therapies",
+          "text": "Please list the conventional therapies tried and the reason for failure.",
+          "type": "text",
+          "next": "infection_screening",
+          "required": true
+        },
+        {
+          "id": "infection_screening",
+          "text": "Has the patient been screened for tuberculosis and other infections?",
+          "type": "yes_no",
+          "next": {
+            "yes": "infection_results",
+            "no": "documentation_required"
+          },
+          "required": true
+        },
+        {
+          "id": "infection_results",
+          "text": "What were the results of the infection screening?",
+          "type": "multiple_choice",
+          "options": [
+            "Negative for TB and other infections",
+            "Positive for TB",
+            "Positive for other infections",
+            "Pending results"
+          ],
+          "next": {
+            "Negative for TB and other infections": "approve",
+            "Positive for TB": "deny",
+            "Positive for other infections": "deny",
+            "Pending results": "documentation_required"
+          },
+          "required": true
+        }
+      ]
+    },
+    "biologic_il_inhibitor": {
+      "name": "IL Inhibitor Biologic Authorization",
+      "questions": [
+        {
+          "id": "diagnosis",
+          "text": "What is the primary diagnosis for this patient?",
+          "type": "multiple_choice",
+          "options": [
+            "Psoriasis",
+            "Psoriatic Arthritis",
+            "Ankylosing Spondylitis",
+            "Crohn's Disease",
+            "Ulcerative Colitis",
+            "Atopic Dermatitis",
+            "Asthma",
+            "Other"
+          ],
+          "next": {
+            "Psoriasis": "psoriasis_severity",
+            "Psoriatic Arthritis": "disease_duration",
+            "Ankylosing Spondylitis": "disease_duration",
+            "Crohn's Disease": "disease_duration",
+            "Ulcerative Colitis": "disease_duration",
+            "Atopic Dermatitis": "atopic_severity",
+            "Asthma": "asthma_severity",
+            "Other": "deny"
+          },
+          "required": true
+        },
+        {
+          "id": "psoriasis_severity",
+          "text": "What is the severity of the patient's psoriasis?",
+          "type": "multiple_choice",
+          "options": [
+            "Mild (less than 3% body surface area)",
+            "Moderate (3-10% body surface area)",
+            "Severe (more than 10% body surface area)"
+          ],
+          "next": {
+            "Mild (less than 3% body surface area)": "deny",
+            "Moderate (3-10% body surface area)": "conventional_therapy",
+            "Severe (more than 10% body surface area)": "conventional_therapy"
+          },
+          "required": true
+        },
+        {
+          "id": "atopic_severity",
+          "text": "What is the severity of the patient's atopic dermatitis?",
+          "type": "multiple_choice",
+          "options": [
+            "Mild",
+            "Moderate",
+            "Severe"
+          ],
+          "next": {
+            "Mild": "deny",
+            "Moderate": "conventional_therapy",
+            "Severe": "conventional_therapy"
+          },
+          "required": true
+        },
+        {
+          "id": "asthma_severity",
+          "text": "What is the severity of the patient's asthma?",
+          "type": "multiple_choice",
+          "options": [
+            "Mild",
+            "Moderate",
+            "Severe"
+          ],
+          "next": {
+            "Mild": "deny",
+            "Moderate": "conventional_therapy",
+            "Severe": "conventional_therapy"
+          },
+          "required": true
+        },
+        {
+          "id": "disease_duration",
+          "text": "How long has the patient had this condition?",
+          "type": "multiple_choice",
+          "options": [
+            "Less than 6 months",
+            "6-12 months",
+            "1-2 years",
+            "More than 2 years"
+          ],
+          "next": {
+            "Less than 6 months": "deny",
+            "6-12 months": "conventional_therapy",
+            "1-2 years": "conventional_therapy",
+            "More than 2 years": "conventional_therapy"
+          },
+          "required": true
+        },
+        {
+          "id": "conventional_therapy",
+          "text": "Has the patient tried and failed conventional therapy?",
+          "type": "yes_no",
+          "next": {
+            "yes": "list_conventional_therapies",
+            "no": "deny"
+          },
+          "required": true
+        },
+        {
+          "id": "list_conventional_therapies",
+          "text": "Please list the conventional therapies tried and the reason for failure.",
+          "type": "text",
+          "next": "infection_screening",
+          "required": true
+        },
+        {
+          "id": "infection_screening",
+          "text": "Has the patient been screened for tuberculosis and other infections?",
+          "type": "yes_no",
+          "next": {
+            "yes": "infection_results",
+            "no": "documentation_required"
+          },
+          "required": true
+        },
+        {
+          "id": "infection_results",
+          "text": "What were the results of the infection screening?",
+          "type": "multiple_choice",
+          "options": [
+            "Negative for TB and other infections",
+            "Positive for TB",
+            "Positive for other infections",
+            "Pending results"
+          ],
+          "next": {
+            "Negative for TB and other infections": "approve",
+            "Positive for TB": "deny",
+            "Positive for other infections": "deny",
+            "Pending results": "documentation_required"
+          },
+          "required": true
+        }
+      ]
+    },
+    "jak_inhibitor": {
+      "name": "JAK Inhibitor Authorization",
+      "questions": [
+        {
+          "id": "diagnosis",
+          "text": "What is the primary diagnosis for this patient?",
+          "type": "multiple_choice",
+          "options": [
+            "Rheumatoid Arthritis",
+            "Psoriatic Arthritis",
+            "Ulcerative Colitis",
+            "Atopic Dermatitis",
+            "Other"
+          ],
+          "next": {
+            "Rheumatoid Arthritis": "disease_duration",
+            "Psoriatic Arthritis": "disease_duration",
+            "Ulcerative Colitis": "disease_duration",
+            "Atopic Dermatitis": "atopic_severity",
+            "Other": "deny"
+          },
+          "required": true
+        },
+        {
+          "id": "disease_duration",
+          "text": "How long has the patient had this condition?",
+          "type": "multiple_choice",
+          "options": [
+            "Less than 6 months",
+            "6-12 months",
+            "1-2 years",
+            "More than 2 years"
+          ],
+          "next": {
+            "Less than 6 months": "deny",
+            "6-12 months": "conventional_therapy",
+            "1-2 years": "conventional_therapy",
+            "More than 2 years": "conventional_therapy"
+          },
+          "required": true
+        },
+        {
+          "id": "atopic_severity",
+          "text": "What is the severity of the patient's atopic dermatitis?",
+          "type": "multiple_choice",
+          "options": [
+            "Mild",
+            "Moderate",
+            "Severe"
+          ],
+          "next": {
+            "Mild": "deny",
+            "Moderate": "conventional_therapy",
+            "Severe": "conventional_therapy"
+          },
+          "required": true
+        },
+        {
+          "id": "conventional_therapy",
+          "text": "Has the patient tried and failed conventional therapy?",
+          "type": "yes_no",
+          "next": {
+            "yes": "list_conventional_therapies",
+            "no": "deny"
+          },
+          "required": true
+        },
+        {
+          "id": "list_conventional_therapies",
+          "text": "Please list the conventional therapies tried and the reason for failure.",
+          "type": "text",
+          "next": "age_check",
+          "required": true
+        },
+        {
+          "id": "age_check",
+          "text": "What is the patient's age?",
+          "type": "numeric",
+          "unit": "years",
+          "next": {
+            "range": {
+              "min": 18,
+              "max": 65,
+              "next": "infection_screening"
+            },
+            "default": "deny"
+          },
+          "required": true
+        },
+        {
+          "id": "infection_screening",
+          "text": "Has the patient been screened for tuberculosis and other infections?",
+          "type": "yes_no",
+          "next": {
+            "yes": "infection_results",
+            "no": "documentation_required"
+          },
+          "required": true
+        },
+        {
+          "id": "infection_results",
+          "text": "What were the results of the infection screening?",
+          "type": "multiple_choice",
+          "options": [
+            "Negative for TB and other infections",
+            "Positive for TB",
+            "Positive for other infections",
+            "Pending results"
+          ],
+          "next": {
+            "Negative for TB and other infections": "approve",
+            "Positive for TB": "deny",
+            "Positive for other infections": "deny",
+            "Pending results": "documentation_required"
+          },
+          "required": true
+        }
+      ]
+    },
+    "ibd_biologic": {
+      "name": "IBD Biologic Authorization",
+      "questions": [
+        {
+          "id": "diagnosis",
+          "text": "What is the primary diagnosis for this patient?",
+          "type": "multiple_choice",
+          "options": [
+            "Crohn's Disease",
+            "Ulcerative Colitis",
+            "Other"
+          ],
+          "next": {
+            "Crohn's Disease": "disease_duration",
+            "Ulcerative Colitis": "disease_duration",
+            "Other": "deny"
+          },
+          "required": true
+        },
+        {
+          "id": "disease_duration",
+          "text": "How long has the patient had this condition?",
+          "type": "multiple_choice",
+          "options": [
+            "Less than 6 months",
+            "6-12 months",
+            "1-2 years",
+            "More than 2 years"
+          ],
+          "next": {
+            "Less than 6 months": "deny",
+            "6-12 months": "disease_severity",
+            "1-2 years": "disease_severity",
+            "More than 2 years": "disease_severity"
+          },
+          "required": true
+        },
+        {
+          "id": "disease_severity",
+          "text": "What is the current severity of the patient's disease?",
+          "type": "multiple_choice",
+          "options": [
+            "Mild",
+            "Moderate",
+            "Severe"
+          ],
+          "next": {
+            "Mild": "conventional_therapy",
+            "Moderate": "conventional_therapy",
+            "Severe": "conventional_therapy"
+          },
+          "required": true
+        },
+        {
+          "id": "conventional_therapy",
+          "text": "Has the patient tried and failed conventional therapy including corticosteroids and immunomodulators?",
+          "type": "yes_no",
+          "next": {
+            "yes": "list_conventional_therapies",
+            "no": "deny"
+          },
+          "required": true
+        },
+        {
+          "id": "list_conventional_therapies",
+          "text": "Please list the conventional therapies tried and the reason for failure.",
+          "type": "text",
+          "next": "previous_biologic",
+          "required": true
+        },
+        {
+          "id": "previous_biologic",
+          "text": "Has the patient tried and failed any biologic therapy?",
+          "type": "yes_no",
+          "next": {
+            "yes": "list_previous_biologics",
+            "no": "infection_screening"
+          },
+          "required": true
+        },
+        {
+          "id": "list_previous_biologics",
+          "text": "Please list the previous biologic therapies and reasons for failure.",
+          "type": "text",
+          "next": "infection_screening",
+          "required": true
+        },
+        {
+          "id": "infection_screening",
+          "text": "Has the patient been screened for tuberculosis and other infections?",
+          "type": "yes_no",
+          "next": {
+            "yes": "infection_results",
+            "no": "documentation_required"
+          },
+          "required": true
+        },
+        {
+          "id": "infection_results",
+          "text": "What were the results of the infection screening?",
+          "type": "multiple_choice",
+          "options": [
+            "Negative for TB and other infections",
+            "Positive for TB",
+            "Positive for other infections",
+            "Pending results"
+          ],
+          "next": {
+            "Negative for TB and other infections": "approve",
+            "Positive for TB": "deny",
+            "Positive for other infections": "deny",
+            "Pending results": "documentation_required"
+          },
+          "required": true
+        }
+      ]
+    },
+    "ibd_jak": {
+      "name": "IBD JAK Inhibitor Authorization",
+      "questions": [
+        {
+          "id": "diagnosis",
+          "text": "What is the primary diagnosis for this patient?",
+          "type": "multiple_choice",
+          "options": [
+            "Ulcerative Colitis",
+            "Crohn's Disease",
+            "Other"
+          ],
+          "next": {
+            "Ulcerative Colitis": "disease_duration",
+            "Crohn's Disease": "deny",
+            "Other": "deny"
+          },
+          "required": true
+        },
+        {
+          "id": "disease_duration",
+          "text": "How long has the patient had ulcerative colitis?",
+          "type": "multiple_choice",
+          "options": [
+            "Less than 6 months",
+            "6-12 months",
+            "1-2 years",
+            "More than 2 years"
+          ],
+          "next": {
+            "Less than 6 months": "deny",
+            "6-12 months": "disease_severity",
+            "1-2 years": "disease_severity",
+            "More than 2 years": "disease_severity"
+          },
+          "required": true
+        },
+        {
+          "id": "disease_severity",
+          "text": "What is the current severity of the patient's ulcerative colitis?",
+          "type": "multiple_choice",
+          "options": [
+            "Mild",
+            "Moderate",
+            "Severe"
+          ],
+          "next": {
+            "Mild": "conventional_therapy",
+            "Moderate": "conventional_therapy",
+            "Severe": "conventional_therapy"
+          },
+          "required": true
+        },
+        {
+          "id": "conventional_therapy",
+          "text": "Has the patient tried and failed conventional therapy including corticosteroids and immunomodulators?",
+          "type": "yes_no",
+          "next": {
+            "yes": "list_conventional_therapies",
+            "no": "deny"
+          },
+          "required": true
+        },
+        {
+          "id": "list_conventional_therapies",
+          "text": "Please list the conventional therapies tried and the reason for failure.",
+          "type": "text",
+          "next": "previous_biologic",
+          "required": true
+        },
+        {
+          "id": "previous_biologic",
+          "text": "Has the patient tried and failed any biologic therapy?",
+          "type": "yes_no",
+          "next": {
+            "yes": "list_previous_biologics",
+            "no": "age_check"
+          },
+          "required": true
+        },
+        {
+          "id": "list_previous_biologics",
+          "text": "Please list the previous biologic therapies and reasons for failure.",
+          "type": "text",
+          "next": "age_check",
+          "required": true
+        },
+        {
+          "id": "age_check",
+          "text": "What is the patient's age?",
+          "type": "numeric",
+          "unit": "years",
+          "next": {
+            "range": {
+              "min": 18,
+              "max": 75,
+              "next": "infection_screening"
+            },
+            "default": "deny"
+          },
+          "required": true
+        },
+        {
+          "id": "infection_screening",
+          "text": "Has the patient been screened for tuberculosis and other infections?",
+          "type": "yes_no",
+          "next": {
+            "yes": "infection_results",
+            "no": "documentation_required"
+          },
+          "required": true
+        },
+        {
+          "id": "infection_results",
+          "text": "What were the results of the infection screening?",
+          "type": "multiple_choice",
+          "options": [
+            "Negative for TB and other infections",
+            "Positive for TB",
+            "Positive for other infections",
+            "Pending results"
+          ],
+          "next": {
+            "Negative for TB and other infections": "approve",
+            "Positive for TB": "deny",
+            "Positive for other infections": "deny",
+            "Pending results": "documentation_required"
+          },
+          "required": true
+        }
+      ]
+    }
+  }
+} 

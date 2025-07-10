@@ -1,0 +1,154 @@
+{
+  "drugs": [
+    {
+      "id": "ozempic",
+      "name": "Ozempic",
+      "genericName": "semaglutide",
+      "category": "GLP-1 Receptor Agonist",
+      "indication": "Type 2 Diabetes",
+      "requiresAuth": true,
+      "questionSet": "diabetes_glp1",
+      "commonNames": ["ozempic", "semaglutide", "wegovy"]
+    },
+    {
+      "id": "mounjaro",
+      "name": "Mounjaro",
+      "genericName": "tirzepatide",
+      "category": "GLP-1/GIP Receptor Agonist",
+      "indication": "Type 2 Diabetes",
+      "requiresAuth": true,
+      "questionSet": "diabetes_glp1",
+      "commonNames": ["mounjaro", "tirzepatide", "zepbound"]
+    },
+    {
+      "id": "humira",
+      "name": "Humira",
+      "genericName": "adalimumab",
+      "category": "TNF Inhibitor",
+      "indication": "Rheumatoid Arthritis, Crohn's Disease, Psoriasis",
+      "requiresAuth": true,
+      "questionSet": "biologic_anti_tnf",
+      "commonNames": ["humira", "adalimumab", "amjevita"]
+    },
+    {
+      "id": "stelara",
+      "name": "Stelara",
+      "genericName": "ustekinumab",
+      "category": "IL-12/23 Inhibitor",
+      "indication": "Psoriasis, Crohn's Disease, Ulcerative Colitis",
+      "requiresAuth": true,
+      "questionSet": "biologic_il_inhibitor",
+      "commonNames": ["stelara", "ustekinumab"]
+    },
+    {
+      "id": "skyrizi",
+      "name": "Skyrizi",
+      "genericName": "risankizumab",
+      "category": "IL-23 Inhibitor",
+      "indication": "Psoriasis, Crohn's Disease",
+      "requiresAuth": true,
+      "questionSet": "biologic_il_inhibitor",
+      "commonNames": ["skyrizi", "risankizumab"]
+    },
+    {
+      "id": "dupixent",
+      "name": "Dupixent",
+      "genericName": "dupilumab",
+      "category": "IL-4/13 Inhibitor",
+      "indication": "Atopic Dermatitis, Asthma, Chronic Rhinosinusitis",
+      "requiresAuth": true,
+      "questionSet": "biologic_il_inhibitor",
+      "commonNames": ["dupixent", "dupilumab"]
+    },
+    {
+      "id": "rinvoq",
+      "name": "Rinvoq",
+      "genericName": "upadacitinib",
+      "category": "JAK Inhibitor",
+      "indication": "Rheumatoid Arthritis, Psoriatic Arthritis, Atopic Dermatitis",
+      "requiresAuth": true,
+      "questionSet": "jak_inhibitor",
+      "commonNames": ["rinvoq", "upadacitinib"]
+    },
+    {
+      "id": "xeljanz",
+      "name": "Xeljanz",
+      "genericName": "tofacitinib",
+      "category": "JAK Inhibitor",
+      "indication": "Rheumatoid Arthritis, Psoriatic Arthritis, Ulcerative Colitis",
+      "requiresAuth": true,
+      "questionSet": "jak_inhibitor",
+      "commonNames": ["xeljanz", "tofacitinib"]
+    },
+    {
+      "id": "cosentyx",
+      "name": "Cosentyx",
+      "genericName": "secukinumab",
+      "category": "IL-17 Inhibitor",
+      "indication": "Psoriasis, Psoriatic Arthritis, Ankylosing Spondylitis",
+      "requiresAuth": true,
+      "questionSet": "biologic_il_inhibitor",
+      "commonNames": ["cosentyx", "secukinumab"]
+    },
+    {
+      "id": "taltz",
+      "name": "Taltz",
+      "genericName": "ixekizumab",
+      "category": "IL-17 Inhibitor",
+      "indication": "Psoriasis, Psoriatic Arthritis, Ankylosing Spondylitis",
+      "requiresAuth": true,
+      "questionSet": "biologic_il_inhibitor",
+      "commonNames": ["taltz", "ixekizumab"]
+    },
+    {
+      "id": "tremfya",
+      "name": "Tremfya",
+      "genericName": "guselkumab",
+      "category": "IL-23 Inhibitor",
+      "indication": "Psoriasis, Psoriatic Arthritis",
+      "requiresAuth": true,
+      "questionSet": "biologic_il_inhibitor",
+      "commonNames": ["tremfya", "guselkumab"]
+    },
+    {
+      "id": "entyvio",
+      "name": "Entyvio",
+      "genericName": "vedolizumab",
+      "category": "Integrin Receptor Antagonist",
+      "indication": "Ulcerative Colitis, Crohn's Disease",
+      "requiresAuth": true,
+      "questionSet": "ibd_biologic",
+      "commonNames": ["entyvio", "vedolizumab"]
+    },
+    {
+      "id": "stelara_ibd",
+      "name": "Stelara IBD",
+      "genericName": "ustekinumab",
+      "category": "IL-12/23 Inhibitor",
+      "indication": "Crohn's Disease, Ulcerative Colitis",
+      "requiresAuth": true,
+      "questionSet": "ibd_biologic",
+      "commonNames": ["stelara ibd", "ustekinumab ibd"]
+    },
+    {
+      "id": "skyrizi_ibd",
+      "name": "Skyrizi IBD",
+      "genericName": "risankizumab",
+      "category": "IL-23 Inhibitor",
+      "indication": "Crohn's Disease",
+      "requiresAuth": true,
+      "questionSet": "ibd_biologic",
+      "commonNames": ["skyrizi ibd", "risankizumab ibd"]
+    },
+    {
+      "id": "rinvoq_ibd",
+      "name": "Rinvoq IBD",
+      "genericName": "upadacitinib",
+      "category": "JAK Inhibitor",
+      "indication": "Ulcerative Colitis",
+      "requiresAuth": true,
+      "questionSet": "ibd_jak",
+      "commonNames": ["rinvoq ibd", "upadacitinib ibd"]
+    }
+  ]
+} 

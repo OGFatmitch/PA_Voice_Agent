@@ -1,0 +1,166 @@
+# Voice Agent Demo - Prior Authorization
+
+A responsive, human-sounding voice agent that handles Prior Authorization requests over the phone using OpenAI's Voice API.
+
+## Features
+
+- **Natural Voice Interaction**: Uses OpenAI's Voice API for human-like conversation
+- **Information Gathering**: Collects member name, birthday, and drug information
+- **Dynamic Question Flow**: Walks through drug-specific authorization questions
+- **Intelligent Decision Making**: Approves, denies, or requests documentation based on responses
+- **Path-Based Logic**: Questions have conditional paths based on provider answers
+- **Real-time Processing**: Handles voice input and provides immediate responses
+
+## Quick Start
+
+1. **Clone and Setup**
+   ```bash
+   git clone <repository-url>
+   cd VoiceAgentDemo
+   npm install
+   npm run setup
+   ```
+
+2. **Configure OpenAI API**
+   Edit the `.env` file and add your OpenAI API key:
+   ```
+   OPENAI_API_KEY=your_actual_openai_api_key_here
+   ```
+
+3. **Start the Server**
+   ```bash
+   npm start
+   # or for development with auto-restart
+   npm run dev
+   ```
+
+4. **Open the Demo**
+   Navigate to `http://localhost:3000` in your browser
+
+## Manual Setup
+
+If you prefer to set up manually:
+
+1. **Install Dependencies**
+   ```bash
+   npm install
+   ```
+
+2. **Environment Configuration**
+   ```bash
+   cp env.example .env
+   ```
+   Edit `.env` and add your OpenAI API key
+
+3. **Create Required Directories**
+   ```bash
+   mkdir uploads temp
+   ```
+
+4. **Test the System**
+   ```bash
+   npm test
+   ```
+
+5. **Start the Server**
+   ```bash
+   npm start
+   ```
+
+## Demo Flow
+
+### 1. Start Session
+- Click "Start New Session" to begin
+- The voice agent will greet you and ask for basic information
+
+### 2. Information Collection
+The agent will collect:
+- **Member Name**: Patient's full name
+- **Date of Birth**: Patient's birth date
+- **Drug Requested**: Medication name (e.g., "Ozempic", "Humira", "Dupixent")
+
+### 3. Question Flow
+Based on the drug, the agent will ask clinical questions such as:
+- Primary diagnosis
+- Disease severity (A1C levels, BMI, etc.)
+- Previous medication trials
+- Contraindications
+- Infection screening results
+
+### 4. Decision
+The agent will provide one of three outcomes:
+- **✅ Approved**: Medication is authorized
+- **❌ Denied**: Authorization denied with reason
+- **📋 Documentation Required**: Additional clinical information needed
+
+### 5. Report Generation
+Download a detailed authorization report with all responses and clinical criteria assessment.
+
+## Supported Drugs
+
+The demo includes authorization criteria for:
+- **GLP-1 Receptor Agonists**: Ozempic, Mounjaro
+- **Biologics**: Humira, Stelara, Skyrizi, Dupixent, Cosentyx, Taltz
+- **JAK Inhibitors**: Rinvoq, Xeljanz
+
+Each drug has specific clinical criteria and question flows based on real-world authorization requirements.
+
+## API Endpoints
+
+- `POST /api/voice/start` - Start a new voice session
+- `POST /api/voice/process` - Process voice input and get response
+- `GET /api/drugs` - Get available drugs and their question sets
+- `GET /api/session/:id` - Get session status
+
+## Project Structure
+
+```
+├── server.js              # Main server file
+├── config/
+│   └── database.js        # Drug and question configurations
+├── services/
+│   ├── voiceService.js    # OpenAI Voice API integration
+│   ├── authService.js     # Authorization logic
+│   └── sessionService.js  # Session management
+├── routes/
+│   └── voiceRoutes.js     # API routes
+├── data/
+│   ├── drugs.json         # Drug definitions
+│   └── questions.json     # Question sets
+└── public/
+    └── index.html         # Demo interface
+```
+
+## Voice Agent Flow
+
+1. **Greeting & Introduction**
+2. **Member Information Collection**
+3. **Drug Identification**
+4. **Question Set Execution**
+5. **Decision & Next Steps**
+
+## Configuration
+
+The system uses JSON files to define:
+- Available drugs and their properties
+- Question sets for each drug
+- Decision logic and paths
+- Voice prompts and responses
+
+## Security Notes
+
+- API keys should be kept secure
+- Voice data is processed temporarily
+- No sensitive data is stored permanently
+- Use HTTPS in production
+
+## Development
+
+To run in development mode with auto-restart:
+```bash
+npm run dev
+```
+
+## License
+
+MIT 

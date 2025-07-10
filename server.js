@@ -1,7 +1,26 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-require('dotenv').config();
+const fs = require('fs');
+
+// Load .env file manually to override shell environment variables
+const envPath = path.join(__dirname, '.env');
+if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    const envLines = envContent.split('\n');
+    
+    envLines.forEach(line => {
+        const trimmedLine = line.trim();
+        if (trimmedLine && !trimmedLine.startsWith('#')) {
+            const [key, ...valueParts] = trimmedLine.split('=');
+            if (key && valueParts.length > 0) {
+                const value = valueParts.join('=').trim();
+                // Override any existing environment variable
+                process.env[key.trim()] = value;
+            }
+        }
+    });
+}
 
 const voiceRoutes = require('./routes/voiceRoutes');
 

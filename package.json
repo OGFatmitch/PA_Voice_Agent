@@ -8,7 +8,8 @@
     "dev": "nodemon server.js",
     "test": "node test.js",
     "test:scenarios": "node test_scenarios.js",
-    "setup": "node setup.js"
+    "setup": "node setup.js",
+    "voice": "node voiceAgent.js"
   },
   "keywords": ["voice-agent", "prior-authorization", "openai", "healthcare"],
   "author": "",

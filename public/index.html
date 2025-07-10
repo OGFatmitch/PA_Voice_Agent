@@ -341,6 +341,7 @@
                     <button id="startSessionBtn" class="btn btn-primary">Start New Session</button>
                     <button id="endSessionBtn" class="btn btn-secondary" disabled>End Session</button>
                     <button id="downloadReportBtn" class="btn btn-success" disabled>Download Report</button>
+                    <button id="launchVoiceAgentBtn" class="btn btn-primary" style="background: linear-gradient(45deg, #ff6b6b, #ee5a24);">🎤 Launch Voice Agent</button>
                 </div>
             </div>
 
@@ -389,6 +390,8 @@
                 this.startSessionBtn.addEventListener('click', () => this.startSession());
                 this.endSessionBtn.addEventListener('click', () => this.endSession());
                 this.downloadReportBtn.addEventListener('click', () => this.downloadReport());
+                this.launchVoiceAgentBtn = document.getElementById('launchVoiceAgentBtn');
+                this.launchVoiceAgentBtn.addEventListener('click', () => this.launchVoiceAgent());
             }
 
             async loadDrugs() {
@@ -576,6 +579,39 @@
                 } catch (error) {
                     console.error('Error downloading report:', error);
                     this.addMessage('system', 'Error downloading report');
+                }
+            }
+
+            async launchVoiceAgent() {
+                try {
+                    this.launchVoiceAgentBtn.disabled = true;
+                    this.launchVoiceAgentBtn.textContent = '🚀 Launching...';
+                    
+                    // Show instructions
+                    this.addMessage('system', '🎤 Launching Voice Agent...');
+                    this.addMessage('system', 'A new terminal window will open with the voice agent.');
+                    this.addMessage('system', 'You can talk directly to the agent using your microphone!');
+                    
+                    // Launch the voice agent in a new terminal window
+                    const response = await fetch('/api/voice/launch-agent', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        this.addMessage('system', '✅ Voice Agent launched successfully!');
+                        this.addMessage('system', 'Check your terminal for the voice agent interface.');
+                    } else {
+                        throw new Error('Failed to launch voice agent');
+                    }
+                } catch (error) {
+                    console.error('Error launching voice agent:', error);
+                    this.addMessage('system', '❌ Failed to launch voice agent. Please run "npm run voice" manually in your terminal.');
+                } finally {
+                    this.launchVoiceAgentBtn.disabled = false;
+                    this.launchVoiceAgentBtn.textContent = '🎤 Launch Voice Agent';
                 }
             }
 

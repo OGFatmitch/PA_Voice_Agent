@@ -59,7 +59,8 @@ router.post('/start', async (req, res) => {
         res.json({
             sessionId,
             message: greeting,
-            audioFile: path.basename(audioFile),
+            audioFile: audioFile.startsWith('text-only:') ? null : path.basename(audioFile),
+            textOnly: audioFile.startsWith('text-only:'),
             status: 'active',
             step: 'greeting'
         });
@@ -111,7 +112,8 @@ router.post('/process/:sessionId', upload.single('audio'), async (req, res) => {
             sessionId,
             transcribedText,
             message: response.message,
-            audioFile: path.basename(audioFile),
+            audioFile: audioFile.startsWith('text-only:') ? null : path.basename(audioFile),
+            textOnly: audioFile.startsWith('text-only:'),
             step: response.step,
             decision: response.decision,
             nextQuestion: response.nextQuestion
@@ -333,5 +335,56 @@ async function processQuestionStep(sessionId, userInput) {
         };
     }
 }
+
+/**
+ * Launch voice agent in terminal
+ * POST /api/voice/launch-agent
+ */
+router.post('/launch-agent', async (req, res) => {
+    try {
+        const { spawn } = require('child_process');
+        const path = require('path');
+        
+        // Launch the voice agent in a new terminal window
+        let command, args;
+        
+        if (process.platform === 'darwin') {
+            // macOS - use Terminal.app
+            command = 'osascript';
+            args = [
+                '-e', 
+                `tell application "Terminal" to do script "cd ${process.cwd()} && npm run voice"`
+            ];
+        } else if (process.platform === 'win32') {
+            // Windows - use cmd
+            command = 'cmd';
+            args = ['/c', 'start', 'cmd', '/k', 'npm run voice'];
+        } else {
+            // Linux - use gnome-terminal or xterm
+            command = 'gnome-terminal';
+            args = ['--', 'bash', '-c', 'npm run voice'];
+        }
+        
+        const child = spawn(command, args, {
+            detached: true,
+            stdio: 'ignore'
+        });
+        
+        child.unref();
+        
+        res.json({ 
+            success: true, 
+            message: 'Voice agent launched in new terminal window',
+            platform: process.platform
+        });
+        
+    } catch (error) {
+        console.error('Error launching voice agent:', error);
+        res.status(500).json({ 
+            error: 'Failed to launch voice agent',
+            message: 'Please run "npm run voice" manually in your terminal'
+        });
+    }
+});
 
 module.exports = router; 

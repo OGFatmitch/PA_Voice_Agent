@@ -1,6 +1,6 @@
-# Voice Agent Demo - Prior Authorization
+# PA_Voice_Agent - Prior Authorization Voice Agent Demo
 
-A responsive, human-sounding voice agent that handles Prior Authorization requests over the phone using OpenAI's Voice API.
+A responsive, human-sounding voice agent that handles Prior Authorization requests for prescriptions over the phone using OpenAI's Voice API.
 
 ## Features
 
@@ -163,4 +163,8 @@ npm run dev
 
 ## License
 
-MIT 
+MIT
+
+---
+
+*This is a demo system for educational and testing purposes. Not intended for production use without proper validation and compliance review.*

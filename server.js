@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const http = require('http');
+const WebSocket = require('ws');
 
 // Load .env file manually to override shell environment variables
 const envPath = path.join(__dirname, '.env');
@@ -25,7 +27,7 @@ if (fs.existsSync(envPath)) {
 const voiceRoutes = require('./routes/voiceRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const server = http.createServer(app);
 
 // Middleware
 app.use(cors());
@@ -34,6 +36,26 @@ app.use(express.static('public'));
 
 // Routes
 app.use('/api/voice', voiceRoutes);
+
+// --- WebSocket Server for Agent Logs ---
+const wss = new WebSocket.Server({ server, path: '/ws' });
+
+function broadcastAgentLog(log) {
+    const msg = typeof log === 'string' ? { type: 'log', message: log } : log;
+    const data = JSON.stringify(msg);
+    wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(data);
+        }
+    });
+}
+
+wss.on('connection', (ws) => {
+    ws.send(JSON.stringify({ type: 'info', message: 'Connected to agent log stream.' }));
+});
+
+// Export for use in agent process
+module.exports.sendAgentLog = broadcastAgentLog;
 
 // Serve the demo interface
 app.get('/', (req, res) => {
@@ -59,7 +81,8 @@ app.use((req, res) => {
     res.status(404).json({ error: 'Endpoint not found' });
 });
 
-app.listen(PORT, () => {
-    console.log(`Voice Agent Server running on port ${PORT}`);
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
     console.log(`Demo interface available at http://localhost:${PORT}`);
 }); 

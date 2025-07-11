@@ -1,0 +1,132 @@
+# Detailed Dummy Patients for Voice Agent Testing
+# Each entry provides all info a doctor would need for PA questions
+
+---
+Name: John Smith
+DOB: 03/15/1985
+Medication: Humira
+Diagnosis: Moderate-to-severe rheumatoid arthritis
+BMI: 27.2
+A1C: 5.6%
+Prior Therapies: Methotrexate (failed), Sulfasalazine (failed)
+Labs: RF positive, ESR 38 mm/hr
+Clinical Notes: No history of TB, up to date on vaccinations
+Expected Outcome: APPROVE
+Reason: Meets all criteria for Humira (failed 2 DMARDs, labs support diagnosis)
+
+---
+Name: Jane Doe
+DOB: 01/10/1990
+Medication: Enbrel
+Diagnosis: Severe plaque psoriasis
+BMI: 24.8
+A1C: 5.4%
+Prior Therapies: Topical steroids (failed), Phototherapy (failed)
+Labs: Negative for hepatitis B/C, normal CBC
+Clinical Notes: No contraindications, BSA >10%
+Expected Outcome: APPROVE
+Reason: Meets all criteria for Enbrel (failed topical and phototherapy)
+
+---
+Name: Robert Johnson
+DOB: 07/22/1972
+Medication: Xeljanz
+Diagnosis: Moderate ulcerative colitis
+BMI: 29.1
+A1C: 6.1%
+Prior Therapies: Mesalamine (failed), Azathioprine (failed)
+Labs: LFTs normal, CRP 12 mg/L
+Clinical Notes: No documentation of prior anti-TNF therapy
+Expected Outcome: DENY
+Reason: Missing prior anti-TNF therapy documentation
+
+---
+Name: Emily Davis
+DOB: 12/05/2001
+Medication: Remicade
+Diagnosis: Crohn's disease, moderate
+BMI: 22.5
+A1C: 5.2%
+Prior Therapies: Budesonide (failed), Azathioprine (failed)
+Labs: CRP 18 mg/L, Fecal calprotectin elevated
+Clinical Notes: Negative TB screen, up to date on vaccines
+Expected Outcome: APPROVE
+Reason: Meets all criteria for Remicade (failed steroids and immunomodulators)
+
+---
+Name: Michael Brown
+DOB: 09/30/1965
+Medication: Cosentyx
+Diagnosis: Ankylosing spondylitis
+BMI: 31.0
+A1C: 7.0%
+Prior Therapies: NSAIDs (failed), No prior anti-TNF trial
+Labs: HLA-B27 positive
+Clinical Notes: No prior anti-TNF therapy attempted
+Expected Outcome: DENY
+Reason: Not indicated for diagnosis without prior anti-TNF trial
+
+---
+Name: Sarah Wilson
+DOB: 05/18/1988
+Medication: Stelara
+Diagnosis: Moderate-to-severe Crohn's disease
+BMI: 26.3
+A1C: 5.8%
+Prior Therapies: Infliximab (failed), Adalimumab (failed)
+Labs: CRP 15 mg/L
+Clinical Notes: No contraindications, negative TB screen
+Expected Outcome: APPROVE
+Reason: Meets all criteria for Stelara (failed 2 biologics)
+
+---
+Name: David Lee
+DOB: 11/02/1975
+Medication: Otezla
+Diagnosis: Psoriatic arthritis
+BMI: 28.7
+A1C: 6.3%
+Prior Therapies: NSAIDs (failed), Methotrexate (incomplete documentation)
+Labs: CBC normal
+Clinical Notes: No documentation of adequate methotrexate trial
+Expected Outcome: DENY
+Reason: Incomplete clinical information (methotrexate trial not documented)
+
+---
+Name: Anna Martinez
+DOB: 04/27/1995
+Medication: Simponi
+Diagnosis: Ulcerative colitis, severe
+BMI: 23.9
+A1C: 5.5%
+Prior Therapies: Mesalamine (failed), Prednisone (failed)
+Labs: CRP 20 mg/L
+Clinical Notes: Negative TB, up to date on vaccines
+Expected Outcome: APPROVE
+Reason: Meets all criteria for Simponi (failed steroids and 5-ASA)
+
+---
+Name: Chris Kim
+DOB: 08/14/1982
+Medication: Taltz
+Diagnosis: Plaque psoriasis
+BMI: 25.6
+A1C: 5.7%
+Prior Therapies: Topical steroids (failed), Phototherapy (failed), No step therapy with biologic
+Labs: Hepatitis panel negative
+Clinical Notes: No prior biologic attempted
+Expected Outcome: DENY
+Reason: Step therapy with biologic not completed
+
+---
+Name: Lisa Patel
+DOB: 02/23/1979
+Medication: Orencia
+Diagnosis: Rheumatoid arthritis, moderate
+BMI: 27.8
+A1C: 5.9%
+Prior Therapies: Methotrexate (failed), Leflunomide (failed), Adalimumab (failed)
+Labs: RF positive, ESR 42 mm/hr
+Clinical Notes: No contraindications
+Expected Outcome: APPROVE
+Reason: Meets all criteria for Orencia (failed 2 DMARDs and 1 biologic) 

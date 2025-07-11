@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voice Agent Demo - Prior Authorization</title>
+    <title>Prior Authorization Voice Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -11,86 +12,161 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary-dark: #18497C;
+            --primary-light: #48B9E6;
+            --primary-red: #E31D3B;
+            --background: #18497C;
+            --card-bg: #223B5C;
+            --text-main: #FFFFFF;
+            --text-secondary: #BFD8F2;
+            --border: #48B9E6;
+            --success: #48B9E6;
+            --warning: #E3B71D;
+            --error: #E31D3B;
+        }
+        html, body {
+            height: 100%;
+        }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text-main);
             min-height: 100vh;
-            color: #333;
+            line-height: 1.6;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
 
-        .header {
-            text-align: center;
-            color: white;
+        /* CVS Header */
+        .cvs-header {
+            background: var(--card-bg);
+            border-bottom: 3px solid var(--primary-red);
+            padding: 20px 0;
             margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
-        .header h1 {
-            font-size: 2.5rem;
+        .cvs-header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cvs-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .cvs-logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .cvs-logo-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .cvs-user-info {
+            text-align: right;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Main Content */
+        .main-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-main);
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-align: center;
         }
 
-        .header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
+        .main-subtitle {
+            font-size: 18px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 40px;
+            font-weight: 400;
         }
 
-        .demo-container {
+        .demo-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
         }
 
         .card {
-            background: white;
-            border-radius: 15px;
+            background: var(--card-bg);
+            border-radius: 12px;
             padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+            border: 1.5px solid var(--border);
         }
 
-        .card:hover {
-            transform: translateY(-5px);
+        .card h2 {
+            color: var(--primary-light);
+            margin-bottom: 25px;
+            font-size: 20px;
+            font-weight: 600;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
+        /* Voice Interface */
         .voice-interface {
-            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--card-bg) 0%, #1B2C47 100%);
+            border: 2px solid var(--primary-light);
         }
 
         .voice-controls {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 25px;
+            margin-bottom: 30px;
         }
 
         .record-button {
-            width: 80px;
-            height: 80px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             border: none;
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-            color: white;
-            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-red), #B71C2C);
+            color: var(--text-main);
+            font-size: 2.5rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 24px rgba(227, 29, 59, 0.3);
+            position: relative;
         }
 
         .record-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            transform: scale(1.05);
+            box-shadow: 0 12px 32px rgba(227, 29, 59, 0.4);
         }
 
         .record-button.recording {
-            background: linear-gradient(45deg, #ff4757, #c44569);
+            background: linear-gradient(135deg, #B71C2C, var(--primary-red));
             animation: pulse 1.5s infinite;
         }
 
@@ -101,176 +177,423 @@
         }
 
         .status-indicator {
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-weight: bold;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-weight: 600;
             text-align: center;
-            margin: 10px 0;
+            font-size: 16px;
+            min-width: 200px;
         }
 
         .status-idle {
-            background: #f1f2f6;
-            color: #2f3542;
+            background: #223B5C;
+            color: var(--text-secondary);
+            border: 2px solid var(--primary-light);
         }
 
         .status-recording {
-            background: #ff6b6b;
-            color: white;
+            background: var(--primary-red);
+            color: var(--text-main);
+            border: 2px solid #B71C2C;
         }
 
         .status-processing {
-            background: #3742fa;
-            color: white;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border: 2px solid var(--primary-light);
         }
 
         .status-complete {
-            background: #2ed573;
-            color: white;
+            background: var(--success);
+            color: var(--primary-dark);
+            border: 2px solid var(--success);
+        }
+
+        /* Conversation Log */
+        .conversation-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid var(--primary-light);
+            border-radius: 12px;
+            background: #1B2C47;
         }
 
         .conversation-log {
-            max-height: 400px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            padding: 20px;
-            background: #f8f9fa;
+            padding: 25px;
         }
 
         .message {
-            margin-bottom: 15px;
-            padding: 10px 15px;
-            border-radius: 10px;
-            max-width: 80%;
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            border-radius: 12px;
+            max-width: 85%;
+            position: relative;
+            font-size: 15px;
+            line-height: 1.5;
         }
 
         .message.agent {
-            background: #007bff;
-            color: white;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary-dark));
+            color: var(--text-main);
             margin-left: 0;
+            box-shadow: 0 4px 12px rgba(72, 185, 230, 0.2);
         }
 
         .message.user {
-            background: #e9ecef;
-            color: #333;
+            background: #223B5C;
+            color: var(--text-main);
             margin-left: auto;
+            border: 1px solid var(--primary-light);
         }
 
         .message.system {
-            background: #28a745;
-            color: white;
+            background: linear-gradient(135deg, var(--success), #1B2C47);
+            color: var(--text-main);
             text-align: center;
-            margin: 10px auto;
+            margin: 15px auto;
+            max-width: 90%;
+            font-weight: 500;
         }
 
+        .message.debug {
+            background: #223B5C;
+            color: var(--primary-light);
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin: 8px auto;
+            max-width: 95%;
+        }
+
+        .message.extraction {
+            background: linear-gradient(135deg, var(--primary-light), #1B2C47);
+            color: var(--primary-dark);
+            margin: 8px auto;
+            max-width: 90%;
+        }
+
+        /* Data Extraction Panel */
+        .extraction-panel {
+            background: #1B2C47;
+            border: 2px solid var(--primary-light);
+        }
+
+        .extraction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .extraction-item {
+            background: #223B5C;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-light);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease;
+        }
+
+        .extraction-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .extraction-label {
+            font-weight: 600;
+            color: var(--primary-light);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+        }
+
+        .extraction-value {
+            color: var(--text-main);
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .extraction-value.empty {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* Session State Panel */
+        .session-panel {
+            background: #1B2C47;
+            border: 2px solid var(--primary-light);
+        }
+
+        .session-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .session-item {
+            background: #223B5C;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-red);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease;
+        }
+
+        .session-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .session-label {
+            font-weight: 600;
+            color: var(--primary-light);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+        }
+
+        .session-value {
+            color: var(--text-main);
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .session-value.empty {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* Real-time Logs Panel */
+        .logs-panel {
+            background: #1B2C47;
+            border: 2px solid var(--primary-light);
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            font-family: 'Inter', monospace;
+            font-size: 13px;
+            border-left: 4px solid var(--primary-light);
+            background: #223B5C;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            color: var(--text-main);
+        }
+
+        .log-entry.info {
+            background: #223B5C;
+            color: var(--primary-light);
+            border-left-color: var(--primary-light);
+        }
+
+        .log-entry.success {
+            background: #223B5C;
+            color: #48B9E6;
+            border-left-color: #48B9E6;
+        }
+
+        .log-entry.warning {
+            background: #223B5C;
+            color: #E3B71D;
+            border-left-color: #E3B71D;
+        }
+
+        .log-entry.error {
+            background: #223B5C;
+            color: var(--primary-red);
+            border-left-color: var(--primary-red);
+        }
+
+        /* Controls */
         .controls {
             display: flex;
             gap: 15px;
             justify-content: center;
-            margin-top: 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
         }
 
         .btn {
-            padding: 12px 24px;
+            padding: 14px 28px;
             border: none;
-            border-radius: 25px;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 600;
             transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            min-width: 140px;
         }
 
         .btn-primary {
-            background: linear-gradient(45deg, #007bff, #0056b3);
-            color: white;
+            background: var(--primary-red);
+            color: var(--text-main);
+            border: 2px solid var(--primary-red);
+        }
+
+        .btn-primary:hover {
+            background: #B71C2C;
+            border-color: #B71C2C;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(227, 29, 59, 0.3);
         }
 
         .btn-secondary {
-            background: linear-gradient(45deg, #6c757d, #545b62);
-            color: white;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border: 2px solid var(--primary-light);
+        }
+
+        .btn-secondary:hover {
+            background: #18497C;
+            color: var(--primary-light);
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(72, 185, 230, 0.2);
         }
 
         .btn-success {
-            background: linear-gradient(45deg, #28a745, #1e7e34);
-            color: white;
+            background: var(--success);
+            color: var(--primary-dark);
+            border: 2px solid var(--success);
         }
 
-        .btn:hover {
+        .btn-success:hover {
+            background: #1B2C47;
+            color: var(--success);
+            border-color: var(--success);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 6px 20px rgba(72, 185, 230, 0.2);
         }
 
-        .session-info {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
+        .btn-warning {
+            background: var(--warning);
+            color: var(--primary-dark);
+            border: 2px solid var(--warning);
         }
 
-        .session-info h3 {
-            margin-bottom: 15px;
-            color: #495057;
+        .btn-warning:hover {
+            background: #E3B71D;
+            color: var(--primary-dark);
+            border-color: #E3B71D;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(227, 183, 29, 0.2);
         }
 
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
-        .info-item {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #007bff;
-        }
-
-        .info-label {
-            font-weight: bold;
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-
-        .info-value {
-            color: #333;
-            margin-top: 5px;
-        }
-
+        /* Drug List */
         .drug-list {
-            max-height: 300px;
+            max-height: 350px;
             overflow-y: auto;
         }
 
         .drug-item {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 16px;
+            border: 1px solid var(--primary-light);
+            border-radius: 8px;
             margin-bottom: 10px;
             cursor: pointer;
-            transition: background 0.3s ease;
+            transition: all 0.3s ease;
+            background: #223B5C;
         }
 
         .drug-item:hover {
-            background: #f8f9fa;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(72, 185, 230, 0.1);
+            border-color: var(--primary-red);
         }
 
         .drug-name {
-            font-weight: bold;
-            color: #007bff;
+            font-weight: 600;
+            color: var(--primary-light);
+            font-size: 16px;
+            margin-bottom: 4px;
         }
 
         .drug-category {
-            font-size: 0.9rem;
-            color: #6c757d;
+            font-size: 14px;
+            color: var(--text-secondary);
         }
 
+        /* Patient Info */
+        .patient-info {
+            background: #223B5C;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--primary-light);
+        }
+
+        .patient-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #1B2C47;
+        }
+
+        .patient-field:last-child {
+            border-bottom: none;
+        }
+
+        .patient-label {
+            font-weight: 600;
+            color: var(--primary-light);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .patient-value {
+            color: var(--text-main);
+            font-size: 16px;
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .patient-expected {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .patient-expected.approve {
+            background: var(--success);
+            color: var(--primary-dark);
+        }
+
+        .patient-expected.deny {
+            background: var(--primary-red);
+            color: var(--text-main);
+        }
+
+        .patient-expected.documentation {
+            background: var(--warning);
+            color: var(--primary-dark);
+        }
+
+        /* Loading Animation */
         .loading {
             display: inline-block;
             width: 20px;
             height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #007bff;
+            border: 3px solid #223B5C;
+            border-top: 3px solid var(--primary-light);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -280,82 +603,201 @@
             100% { transform: rotate(360deg); }
         }
 
-        .error {
-            background: #dc3545;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-        }
-
-        .success {
-            background: #28a745;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 768px) {
-            .demo-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
+            .main-title {
+                font-size: 24px;
             }
             
             .controls {
                 flex-direction: column;
                 align-items: center;
             }
+
+            .extraction-grid,
+            .session-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cvs-header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #223B5C;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-red);
+        }
+
+        /* CVS Brand Elements */
+        .cvs-badge {
+            background: var(--primary-red);
+            color: var(--text-main);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .cvs-divider {
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-red), var(--primary-dark));
+            margin: 20px 0;
+            border-radius: 1px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🎤 Voice Agent Demo</h1>
-            <p>Prior Authorization Processing with OpenAI Voice API</p>
+    <!-- CVS Header -->
+    <div class="cvs-header">
+        <div class="cvs-header-content">
+            <div class="cvs-logo">
+                <div>
+                    <div class="cvs-logo-text">Prior Authorization System</div>
+                    <div class="cvs-logo-subtitle">Voice Assistant</div>
+                </div>
+            </div>
+            <div class="cvs-user-info">
+                <div>Healthcare Provider Portal</div>
+                <div>Session: <span id="sessionIdDisplay">Not Active</span></div>
+            </div>
         </div>
+    </div>
 
-        <div class="demo-container">
-            <div class="card voice-interface">
-                <h2>Voice Interface</h2>
+    <div class="container">
+        <h1 class="main-title">Prior Authorization Voice Assistant</h1>
+        <p class="main-subtitle">AI-powered voice interface for medication authorization requests</p>
+
+        <div class="demo-grid">
+            <!-- Voice Interface -->
+            <div class="card voice-interface full-width">
+                <h2>🎤 Voice Interface</h2>
                 <div class="voice-controls">
                     <button id="recordButton" class="record-button">
                         🎤
                     </button>
                     <div id="statusIndicator" class="status-indicator status-idle">
-                        Ready to start
+                        Ready to start session
                     </div>
                 </div>
 
-                <div class="conversation-log" id="conversationLog">
-                    <div class="message system">
-                        Welcome to the Prior Authorization Voice Agent Demo
+                <div class="conversation-container">
+                    <div class="conversation-log" id="conversationLog">
+                        <div class="message system">
+                            🎯 Welcome to Prior Authorization Voice Assistant
+                        </div>
+                        <div class="message system">
+                            Click "Start Session" to begin your authorization request
+                        </div>
                     </div>
                 </div>
 
                 <div class="controls">
-                    <button id="startSessionBtn" class="btn btn-primary">Start New Session</button>
-                    <button id="endSessionBtn" class="btn btn-secondary" disabled>End Session</button>
-                    <button id="downloadReportBtn" class="btn btn-success" disabled>Download Report</button>
-                    <button id="launchVoiceAgentBtn" class="btn btn-primary" style="background: linear-gradient(45deg, #ff6b6b, #ee5a24);">🎤 Launch Voice Agent</button>
+                    <button id="startSessionBtn" class="btn btn-primary">🚀 Start Session</button>
+                    <button id="endSessionBtn" class="btn btn-secondary" disabled>⏹️ End Session</button>
+                    <button id="downloadReportBtn" class="btn btn-success" disabled>📄 Download Report</button>
+                    <button id="clearLogsBtn" class="btn btn-warning">🗑️ Clear Logs</button>
+                    <button id="launchAgentBtn" class="btn btn-primary">🤖 Launch Voice Agent</button>
                 </div>
             </div>
 
-            <div class="card">
-                <h2>Session Information</h2>
-                <div class="session-info" id="sessionInfo">
-                    <p>No active session</p>
+            <!-- Data Extraction Panel -->
+            <div class="card extraction-panel">
+                <h2>📊 Data Extraction</h2>
+                <div class="extraction-grid" id="extractionGrid">
+                    <div class="extraction-item">
+                        <div class="extraction-label">Patient Name</div>
+                        <div class="extraction-value empty" id="patientName">Not provided</div>
+                    </div>
+                    <div class="extraction-item">
+                        <div class="extraction-label">Date of Birth</div>
+                        <div class="extraction-value empty" id="dateOfBirth">Not provided</div>
+                    </div>
+                    <div class="extraction-item">
+                        <div class="extraction-label">Medication</div>
+                        <div class="extraction-value empty" id="medication">Not provided</div>
+                    </div>
+                    <div class="extraction-item">
+                        <div class="extraction-label">Confidence</div>
+                        <div class="extraction-value empty" id="confidence">N/A</div>
+                    </div>
                 </div>
             </div>
 
+            <!-- Session State Panel -->
+            <div class="card session-panel">
+                <h2>📋 Session State</h2>
+                <div class="session-grid" id="sessionGrid">
+                    <div class="session-item">
+                        <div class="session-label">Session ID</div>
+                        <div class="session-value empty" id="sessionId">No active session</div>
+                    </div>
+                    <div class="session-item">
+                        <div class="session-label">Current Step</div>
+                        <div class="session-value empty" id="currentStep">Not started</div>
+                    </div>
+                    <div class="session-item">
+                        <div class="session-label">Questions Answered</div>
+                        <div class="session-value empty" id="questionsAnswered">0</div>
+                    </div>
+                    <div class="session-item">
+                        <div class="session-label">Decision</div>
+                        <div class="session-value empty" id="decision">Pending</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real-time Logs Panel -->
+            <div class="card logs-panel full-width">
+                <h2>📝 Agent Logs (Live)</h2>
+                <div id="agentLogsContainer">
+                    <div class="log-entry info">
+                        Waiting for agent logs...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Drugs Panel -->
             <div class="card">
-                <h2>Available Drugs</h2>
+                <h2>💊 Available Medications</h2>
                 <div class="drug-list" id="drugList">
-                    <div class="loading"></div> Loading drugs...
+                    <div class="loading"></div> Loading medications...
+                </div>
+            </div>
+
+            <!-- Random Dummy Patient Panel -->
+            <div class="card">
+                <h2>👤 Random Test Patient</h2>
+                <div class="patient-info" id="patientInfo">
+                    <div class="loading"></div> Loading patient data...
+                </div>
+                <div class="controls" style="margin-top: 20px;">
+                    <button id="refreshPatientBtn" class="btn btn-secondary">🔄 New Patient</button>
+                    <button id="usePatientBtn" class="btn btn-primary">✅ Use This Patient</button>
                 </div>
             </div>
         </div>
@@ -368,21 +810,47 @@
                 this.isRecording = false;
                 this.mediaRecorder = null;
                 this.audioChunks = [];
+                this.logCount = 0;
                 
                 this.initializeElements();
                 this.bindEvents();
                 this.loadDrugs();
+                this.loadRandomPatient();
+                this.addLog('info', 'Prior Authorization System ready');
+                this.connectAgentLogs();
             }
 
             initializeElements() {
                 this.recordButton = document.getElementById('recordButton');
                 this.statusIndicator = document.getElementById('statusIndicator');
                 this.conversationLog = document.getElementById('conversationLog');
-                this.sessionInfo = document.getElementById('sessionInfo');
-                this.drugList = document.getElementById('drugList');
                 this.startSessionBtn = document.getElementById('startSessionBtn');
                 this.endSessionBtn = document.getElementById('endSessionBtn');
                 this.downloadReportBtn = document.getElementById('downloadReportBtn');
+                this.clearLogsBtn = document.getElementById('clearLogsBtn');
+                this.drugList = document.getElementById('drugList');
+                this.sessionIdDisplay = document.getElementById('sessionIdDisplay');
+                
+                // Data extraction elements
+                this.patientName = document.getElementById('patientName');
+                this.dateOfBirth = document.getElementById('dateOfBirth');
+                this.medication = document.getElementById('medication');
+                this.confidence = document.getElementById('confidence');
+                
+                // Session state elements
+                this.sessionIdElement = document.getElementById('sessionId');
+                this.currentStep = document.getElementById('currentStep');
+                this.questionsAnswered = document.getElementById('questionsAnswered');
+                this.decision = document.getElementById('decision');
+                
+                // Logs container
+                this.agentLogsContainer = document.getElementById('agentLogsContainer');
+                this.launchAgentBtn = document.getElementById('launchAgentBtn');
+                
+                // Patient info elements
+                this.patientInfo = document.getElementById('patientInfo');
+                this.refreshPatientBtn = document.getElementById('refreshPatientBtn');
+                this.usePatientBtn = document.getElementById('usePatientBtn');
             }
 
             bindEvents() {
@@ -390,18 +858,94 @@
                 this.startSessionBtn.addEventListener('click', () => this.startSession());
                 this.endSessionBtn.addEventListener('click', () => this.endSession());
                 this.downloadReportBtn.addEventListener('click', () => this.downloadReport());
-                this.launchVoiceAgentBtn = document.getElementById('launchVoiceAgentBtn');
-                this.launchVoiceAgentBtn.addEventListener('click', () => this.launchVoiceAgent());
+                this.clearLogsBtn.addEventListener('click', () => this.clearLogs());
+                this.launchAgentBtn.addEventListener('click', () => this.launchAgent());
+                this.refreshPatientBtn.addEventListener('click', () => this.loadRandomPatient());
+                this.usePatientBtn.addEventListener('click', () => this.useCurrentPatient());
+            }
+
+            addLog(type, message) {
+                const timestamp = new Date().toLocaleTimeString();
+                const logEntry = document.createElement('div');
+                logEntry.className = `log-entry ${type}`;
+                logEntry.innerHTML = `<strong>[${timestamp}]</strong> ${message}`;
+                
+                this.agentLogsContainer.appendChild(logEntry);
+                this.agentLogsContainer.scrollTop = this.agentLogsContainer.scrollHeight;
+                
+                // Keep only last 50 log entries
+                while (this.agentLogsContainer.children.length > 50) {
+                    this.agentLogsContainer.removeChild(this.agentLogsContainer.firstChild);
+                }
+            }
+
+            clearLogs() {
+                this.agentLogsContainer.innerHTML = '';
+                this.addLog('info', 'CVS Health logs cleared');
+            }
+
+            updateExtractionData(data) {
+                if (data.memberName) {
+                    this.patientName.textContent = data.memberName;
+                    this.patientName.className = 'extraction-value';
+                    this.addLog('success', `Extracted patient name: ${data.memberName}`);
+                }
+                
+                if (data.dateOfBirth) {
+                    this.dateOfBirth.textContent = data.dateOfBirth;
+                    this.dateOfBirth.className = 'extraction-value';
+                    this.addLog('success', `Extracted date of birth: ${data.dateOfBirth}`);
+                }
+                
+                if (data.drugName) {
+                    this.medication.textContent = data.drugName;
+                    this.medication.className = 'extraction-value';
+                    this.addLog('success', `Extracted medication: ${data.drugName}`);
+                }
+                
+                if (data.confidence) {
+                    this.confidence.textContent = `${(data.confidence * 100).toFixed(1)}%`;
+                    this.confidence.className = 'extraction-value';
+                }
+            }
+
+            updateSessionState(data) {
+                if (data.sessionId) {
+                    const shortId = data.sessionId.substring(0, 8) + '...';
+                    this.sessionIdElement.textContent = shortId;
+                    this.sessionIdElement.className = 'session-value';
+                    this.sessionIdDisplay.textContent = shortId;
+                }
+                
+                if (data.step) {
+                    this.currentStep.textContent = data.step.replace('_', ' ').toUpperCase();
+                    this.currentStep.className = 'session-value';
+                    this.addLog('info', `Session step: ${data.step}`);
+                }
+                
+                if (data.questionsAnswered !== undefined) {
+                    this.questionsAnswered.textContent = data.questionsAnswered;
+                    this.questionsAnswered.className = 'session-value';
+                }
+                
+                if (data.decision) {
+                    this.decision.textContent = data.decision.toUpperCase();
+                    this.decision.className = 'session-value';
+                    this.addLog('success', `Authorization decision: ${data.decision}`);
+                }
             }
 
             async loadDrugs() {
                 try {
+                    this.addLog('info', 'Loading CVS Health medication database...');
                     const response = await fetch('/api/voice/drugs');
                     const data = await response.json();
                     this.displayDrugs(data.drugs);
+                    this.addLog('success', `Loaded ${data.drugs.length} medications from CVS database`);
                 } catch (error) {
                     console.error('Error loading drugs:', error);
-                    this.drugList.innerHTML = '<div class="error">Failed to load drugs</div>';
+                    this.drugList.innerHTML = '<div class="error">Failed to load medications</div>';
+                    this.addLog('error', 'Failed to load CVS medication database');
                 }
             }
 
@@ -414,9 +958,88 @@
                 `).join('');
             }
 
+            async loadRandomPatient() {
+                try {
+                    this.addLog('info', 'Loading random test patient...');
+                    const response = await fetch('/api/voice/random-patient');
+                    const patient = await response.json();
+                    this.displayPatient(patient);
+                    this.addLog('success', `Loaded test patient: ${patient.Name}`);
+                } catch (error) {
+                    console.error('Error loading random patient:', error);
+                    this.patientInfo.innerHTML = '<div class="error">Failed to load patient data</div>';
+                    this.addLog('error', 'Failed to load test patient data');
+                }
+            }
+
+            displayPatient(patient) {
+                const expectedClass = patient.ExpectedOutcome.toLowerCase();
+                this.patientInfo.innerHTML = `
+                    <div class="patient-field">
+                        <span class="patient-label">Name</span>
+                        <span class="patient-value">${patient.Name}</span>
+                    </div>
+                    <div class="patient-field">
+                        <span class="patient-label">Date of Birth</span>
+                        <span class="patient-value">${patient.DOB}</span>
+                    </div>
+                    <div class="patient-field">
+                        <span class="patient-label">Medication</span>
+                        <span class="patient-value">${patient.Medication}</span>
+                    </div>
+                    <div class="patient-field">
+                        <span class="patient-label">Diagnosis</span>
+                        <span class="patient-value">${patient.Diagnosis}</span>
+                    </div>
+                    <div class="patient-field">
+                        <span class="patient-label">BMI</span>
+                        <span class="patient-value">${patient.BMI}</span>
+                    </div>
+                    <div class="patient-field">
+                        <span class="patient-label">A1C</span>
+                        <span class="patient-value">${patient.A1C}</span>
+                    </div>
+                    <div class="patient-field">
+                        <span class="patient-label">Prior Therapies</span>
+                        <span class="patient-value">${patient.PriorTherapies}</span>
+                    </div>
+                    <div class="patient-field">
+                        <span class="patient-label">Expected Outcome</span>
+                        <span class="patient-expected ${expectedClass}">${patient.ExpectedOutcome}</span>
+                    </div>
+                    <div class="patient-field">
+                        <span class="patient-label">Reason</span>
+                        <span class="patient-value">${patient.Reason}</span>
+                    </div>
+                `;
+            }
+
+            useCurrentPatient() {
+                const patientFields = this.patientInfo.querySelectorAll('.patient-field');
+                if (patientFields.length === 0) {
+                    this.addLog('warning', 'No patient data available to use');
+                    return;
+                }
+
+                const patientData = {};
+                patientFields.forEach(field => {
+                    const label = field.querySelector('.patient-label').textContent.toLowerCase();
+                    const value = field.querySelector('.patient-value, .patient-expected').textContent;
+                    
+                    if (label === 'name') patientData.memberName = value;
+                    if (label === 'date of birth') patientData.dateOfBirth = value;
+                    if (label === 'medication') patientData.drugName = value;
+                });
+
+                this.updateExtractionData(patientData);
+                this.addLog('success', `Applied test patient data: ${patientData.memberName}`);
+                this.addMessage('system', `✅ Test patient data applied: ${patientData.memberName} - ${patientData.drugName}`);
+            }
+
             async startSession() {
                 try {
-                    this.updateStatus('processing', 'Starting session...');
+                    this.updateStatus('processing', 'Starting CVS Health session...');
+                    this.addLog('info', 'Initiating new CVS Health prior authorization session...');
                     
                     const response = await fetch('/api/voice/start', {
                         method: 'POST',
@@ -430,21 +1053,24 @@
                     if (data.sessionId) {
                         this.sessionId = data.sessionId;
                         this.addMessage('agent', data.message);
-                        this.updateSessionInfo(data);
+                        this.updateSessionState(data);
                         this.startSessionBtn.disabled = true;
                         this.endSessionBtn.disabled = false;
-                        this.updateStatus('idle', 'Session started - Click to record');
+                        this.updateStatus('idle', 'Session started - Click microphone to record');
+                        this.addLog('success', `CVS Health session started: ${data.sessionId.substring(0, 8)}...`);
                     }
                 } catch (error) {
                     console.error('Error starting session:', error);
-                    this.addMessage('system', 'Error starting session');
+                    this.addMessage('system', 'Error starting CVS Health session');
                     this.updateStatus('idle', 'Failed to start session');
+                    this.addLog('error', 'Failed to start CVS Health session: ' + error.message);
                 }
             }
 
             async toggleRecording() {
                 if (!this.sessionId) {
-                    this.addMessage('system', 'Please start a session first');
+                    this.addMessage('system', 'Please start a CVS Health session first');
+                    this.addLog('warning', 'Attempted to record without active CVS session');
                     return;
                 }
 
@@ -457,6 +1083,7 @@
 
             async startRecording() {
                 try {
+                    this.addLog('info', 'Requesting microphone access for CVS Health...');
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     this.mediaRecorder = new MediaRecorder(stream);
                     this.audioChunks = [];
@@ -473,9 +1100,11 @@
                     this.isRecording = true;
                     this.recordButton.classList.add('recording');
                     this.updateStatus('recording', 'Recording... Click to stop');
+                    this.addLog('info', 'CVS Health recording started - Speak now');
                 } catch (error) {
                     console.error('Error starting recording:', error);
                     this.addMessage('system', 'Error accessing microphone');
+                    this.addLog('error', 'Microphone access denied: ' + error.message);
                 }
             }
 
@@ -486,6 +1115,7 @@
                     this.isRecording = false;
                     this.recordButton.classList.remove('recording');
                     this.updateStatus('processing', 'Processing audio...');
+                    this.addLog('info', 'CVS Health recording stopped - Processing audio...');
                 }
             }
 
@@ -495,6 +1125,7 @@
                     const formData = new FormData();
                     formData.append('audio', audioBlob, 'recording.wav');
 
+                    this.addLog('info', 'Sending audio to CVS Health processing system...');
                     const response = await fetch(`/api/voice/process/${this.sessionId}`, {
                         method: 'POST',
                         body: formData
@@ -504,13 +1135,20 @@
                     
                     if (data.transcribedText) {
                         this.addMessage('user', data.transcribedText);
+                        this.addLog('success', `CVS Health transcribed: "${data.transcribedText}"`);
                     }
                     
                     if (data.message) {
                         this.addMessage('agent', data.message);
+                        this.addLog('info', `CVS Health response: "${data.message.substring(0, 50)}..."`);
                     }
 
-                    this.updateSessionInfo(data);
+                    // Update extraction data if available
+                    if (data.extractedData) {
+                        this.updateExtractionData(data.extractedData);
+                    }
+
+                    this.updateSessionState(data);
                     
                     if (data.decision) {
                         this.handleDecision(data);
@@ -521,6 +1159,7 @@
                     console.error('Error processing audio:', error);
                     this.addMessage('system', 'Error processing audio');
                     this.updateStatus('idle', 'Error processing audio');
+                    this.addLog('error', 'CVS Health audio processing failed: ' + error.message);
                 }
             }
 
@@ -528,11 +1167,14 @@
                 this.downloadReportBtn.disabled = false;
                 
                 if (data.decision === 'approve') {
-                    this.addMessage('system', '✅ Authorization Approved');
+                    this.addMessage('system', '✅ CVS Health Authorization Approved');
+                    this.addLog('success', 'CVS Health authorization APPROVED');
                 } else if (data.decision === 'deny') {
-                    this.addMessage('system', '❌ Authorization Denied');
+                    this.addMessage('system', '❌ CVS Health Authorization Denied');
+                    this.addLog('warning', 'CVS Health authorization DENIED');
                 } else if (data.decision === 'documentation_required') {
-                    this.addMessage('system', '📋 Additional Documentation Required');
+                    this.addMessage('system', '📋 CVS Health: Additional Documentation Required');
+                    this.addLog('warning', 'CVS Health requires additional documentation');
                 }
             }
 
@@ -540,20 +1182,33 @@
                 if (!this.sessionId) return;
 
                 try {
+                    this.addLog('info', 'Ending CVS Health session...');
                     await fetch(`/api/voice/end/${this.sessionId}`, {
                         method: 'POST'
                     });
 
-                    this.addMessage('system', 'Session ended');
+                    this.addMessage('system', 'CVS Health session ended');
+                    this.addLog('info', 'CVS Health session ended successfully');
                     this.sessionId = null;
                     this.startSessionBtn.disabled = false;
                     this.endSessionBtn.disabled = true;
                     this.downloadReportBtn.disabled = true;
                     this.updateStatus('idle', 'Session ended');
-                    this.sessionInfo.innerHTML = '<p>No active session</p>';
+                    this.sessionIdDisplay.textContent = 'Not Active';
+                    
+                    // Reset session state
+                    this.sessionIdElement.textContent = 'No active session';
+                    this.sessionIdElement.className = 'session-value empty';
+                    this.currentStep.textContent = 'Not started';
+                    this.currentStep.className = 'session-value empty';
+                    this.questionsAnswered.textContent = '0';
+                    this.questionsAnswered.className = 'session-value empty';
+                    this.decision.textContent = 'Pending';
+                    this.decision.className = 'session-value empty';
                 } catch (error) {
                     console.error('Error ending session:', error);
-                    this.addMessage('system', 'Error ending session');
+                    this.addMessage('system', 'Error ending CVS Health session');
+                    this.addLog('error', 'Failed to end CVS Health session: ' + error.message);
                 }
             }
 
@@ -561,6 +1216,7 @@
                 if (!this.sessionId) return;
 
                 try {
+                    this.addLog('info', 'Generating CVS Health authorization report...');
                     const response = await fetch(`/api/voice/report/${this.sessionId}`);
                     const report = await response.json();
                     
@@ -571,47 +1227,17 @@
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = `auth-report-${this.sessionId}.json`;
+                    a.download = `cvs-health-auth-report-${this.sessionId}.json`;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
+                    
+                    this.addLog('success', 'CVS Health authorization report downloaded');
                 } catch (error) {
                     console.error('Error downloading report:', error);
-                    this.addMessage('system', 'Error downloading report');
-                }
-            }
-
-            async launchVoiceAgent() {
-                try {
-                    this.launchVoiceAgentBtn.disabled = true;
-                    this.launchVoiceAgentBtn.textContent = '🚀 Launching...';
-                    
-                    // Show instructions
-                    this.addMessage('system', '🎤 Launching Voice Agent...');
-                    this.addMessage('system', 'A new terminal window will open with the voice agent.');
-                    this.addMessage('system', 'You can talk directly to the agent using your microphone!');
-                    
-                    // Launch the voice agent in a new terminal window
-                    const response = await fetch('/api/voice/launch-agent', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    
-                    if (response.ok) {
-                        this.addMessage('system', '✅ Voice Agent launched successfully!');
-                        this.addMessage('system', 'Check your terminal for the voice agent interface.');
-                    } else {
-                        throw new Error('Failed to launch voice agent');
-                    }
-                } catch (error) {
-                    console.error('Error launching voice agent:', error);
-                    this.addMessage('system', '❌ Failed to launch voice agent. Please run "npm run voice" manually in your terminal.');
-                } finally {
-                    this.launchVoiceAgentBtn.disabled = false;
-                    this.launchVoiceAgentBtn.textContent = '🎤 Launch Voice Agent';
+                    this.addMessage('system', 'Error downloading CVS Health report');
+                    this.addLog('error', 'Failed to download CVS Health report: ' + error.message);
                 }
             }
 
@@ -628,29 +1254,54 @@
                 this.statusIndicator.textContent = text;
             }
 
-            updateSessionInfo(data) {
-                if (!data.sessionId) return;
+            launchAgent() {
+                this.launchAgentBtn.disabled = true;
+                this.addAgentLog('info', 'Launching voice agent...');
+                fetch('/api/voice/launch-agent', { method: 'POST' })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.addAgentLog('success', 'Voice agent launched!');
+                        } else {
+                            this.addAgentLog('error', data.message || 'Failed to launch agent');
+                        }
+                    })
+                    .catch(err => {
+                        this.addAgentLog('error', 'Failed to launch agent: ' + err.message);
+                    })
+                    .finally(() => {
+                        setTimeout(() => { this.launchAgentBtn.disabled = false; }, 2000);
+                    });
+            }
 
-                const info = `
-                    <h3>Current Session</h3>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <div class="info-label">Session ID</div>
-                            <div class="info-value">${data.sessionId.substring(0, 8)}...</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Status</div>
-                            <div class="info-value">${data.step || 'Unknown'}</div>
-                        </div>
-                        ${data.decision ? `
-                        <div class="info-item">
-                            <div class="info-label">Decision</div>
-                            <div class="info-value">${data.decision}</div>
-                        </div>
-                        ` : ''}
-                    </div>
-                `;
-                this.sessionInfo.innerHTML = info;
+            connectAgentLogs() {
+                const ws = new WebSocket('ws://localhost:3000/ws');
+                ws.onmessage = (event) => {
+                    try {
+                        const msg = JSON.parse(event.data);
+                        this.addAgentLog(msg.type || 'log', msg.message);
+                    } catch (e) {
+                        this.addAgentLog('error', 'Malformed log message');
+                    }
+                };
+                ws.onopen = () => {
+                    this.addAgentLog('info', 'Connected to agent log stream.');
+                };
+                ws.onclose = () => {
+                    this.addAgentLog('warning', 'Disconnected from agent log stream. Reconnecting...');
+                    setTimeout(() => this.connectAgentLogs(), 2000);
+                };
+            }
+
+            addAgentLog(type, message) {
+                const logEntry = document.createElement('div');
+                logEntry.className = `log-entry ${type}`;
+                logEntry.innerHTML = `<strong>[${new Date().toLocaleTimeString()}]</strong> ${message}`;
+                this.agentLogsContainer.appendChild(logEntry);
+                this.agentLogsContainer.scrollTop = this.agentLogsContainer.scrollHeight;
+                while (this.agentLogsContainer.children.length > 100) {
+                    this.agentLogsContainer.removeChild(this.agentLogsContainer.firstChild);
+                }
             }
         }
 

@@ -11,19 +11,25 @@
     "setup": "node setup.js",
     "voice": "node voiceAgent.js"
   },
-  "keywords": ["voice-agent", "prior-authorization", "openai", "healthcare"],
+  "keywords": [
+    "voice-agent",
+    "prior-authorization",
+    "openai",
+    "healthcare"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
-    "openai": "^4.20.1",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "fs-extra": "^11.1.1",
     "multer": "^1.4.5-lts.1",
+    "openai": "^4.20.1",
     "uuid": "^9.0.1",
-    "fs-extra": "^11.1.1"
+    "ws": "^8.18.3"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
   }
-} 
+}

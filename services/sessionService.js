@@ -48,7 +48,8 @@ class SessionService {
             questionFlow: [],
             currentQuestionIndex: 0,
             decision: null,
-            decisionReason: null
+            decisionReason: null,
+            conversationHistory: [] // Track conversation turns
         };
 
         this.sessions.set(sessionId, session);
@@ -344,28 +345,39 @@ class SessionService {
     }
 
     /**
-     * Process answer and move to next question
+     * Process answer with enhanced support for shorter responses
      * @param {string} sessionId - Session identifier
      * @param {string} answer - User's answer
      * @returns {Object} - Next step information
      */
-    processAnswer(sessionId, answer) {
+    async processAnswer(sessionId, answer) {
         const session = this.getSession(sessionId);
         if (!session) return { action: 'error', message: 'Session not found' };
 
         const currentQuestion = this.getCurrentQuestion(sessionId);
         if (!currentQuestion) return { action: 'complete', decision: session.decision };
 
-        // Store the answer
-        session.answers[currentQuestion.id] = answer;
+        // Enhanced answer processing for shorter responses
+        const processedAnswer = await this.processShortAnswer(answer, currentQuestion);
+        
+        if (processedAnswer.needsClarification) {
+            return {
+                action: 'clarification',
+                message: processedAnswer.clarificationMessage,
+                question: currentQuestion
+            };
+        }
 
-        // Determine next step based on question type and answer
-        const nextStep = this.determineNextStep(currentQuestion, answer);
+        // Store the processed answer
+        session.answers[currentQuestion.id] = processedAnswer.answer;
+
+        // Determine next step based on question type and processed answer
+        const nextStep = this.determineNextStep(currentQuestion, processedAnswer.answer);
         
         if (nextStep === 'approve' || nextStep === 'deny' || nextStep === 'documentation_required') {
             session.decision = nextStep;
             session.step = 'complete';
-            session.decisionReason = this.getDecisionReason(currentQuestion, answer);
+            session.decisionReason = this.getDecisionReason(currentQuestion, processedAnswer.answer);
             return { action: 'complete', decision: nextStep, reason: session.decisionReason };
         }
 
@@ -374,6 +386,338 @@ class SessionService {
         this.updateSession(sessionId, session);
 
         return { action: 'next_question', question: this.getCurrentQuestion(sessionId) };
+    }
+
+    /**
+     * Process short answers with enhanced validation and clarification
+     * @param {string} answer - Raw user answer
+     * @param {Object} question - Current question being asked
+     * @returns {Object} - Processed answer with clarification needs
+     */
+    async processShortAnswer(answer, question) {
+        const normalizedAnswer = answer.toLowerCase().trim();
+        
+        // Handle empty or very short responses
+        if (!normalizedAnswer || normalizedAnswer.length < 2) {
+            return {
+                answer: null,
+                needsClarification: true,
+                clarificationMessage: this.getClarificationMessage(question, 'too_short')
+            };
+        }
+
+        // Handle question type specific processing
+        switch (question.type) {
+            case 'yes_no':
+                return this.processYesNoAnswer(normalizedAnswer, question);
+            case 'multiple_choice':
+                return this.processMultipleChoiceAnswer(normalizedAnswer, question);
+            case 'numeric':
+                return this.processNumericAnswer(normalizedAnswer, question);
+            case 'text':
+                return this.processTextAnswer(normalizedAnswer, question);
+            default:
+                return {
+                    answer: answer,
+                    needsClarification: false
+                };
+        }
+    }
+
+    /**
+     * Process yes/no answers with enhanced validation
+     * @param {string} answer - Normalized answer
+     * @param {Object} question - Current question
+     * @returns {Object} - Processed answer
+     */
+    processYesNoAnswer(answer, question) {
+        const yesPatterns = ['yes', 'y', 'yeah', 'yep', 'sure', 'okay', 'ok', 'correct', 'right', 'true'];
+        const noPatterns = ['no', 'n', 'nope', 'nah', 'negative', 'false', 'incorrect', 'wrong'];
+        
+        if (yesPatterns.includes(answer)) {
+            return { answer: 'yes', needsClarification: false };
+        } else if (noPatterns.includes(answer)) {
+            return { answer: 'no', needsClarification: false };
+        } else {
+            // Check for partial matches
+            const isPartialYes = yesPatterns.some(pattern => answer.includes(pattern));
+            const isPartialNo = noPatterns.some(pattern => answer.includes(pattern));
+            
+            if (isPartialYes && !isPartialNo) {
+                return { answer: 'yes', needsClarification: false };
+            } else if (isPartialNo && !isPartialYes) {
+                return { answer: 'no', needsClarification: false };
+            } else {
+                return {
+                    answer: null,
+                    needsClarification: true,
+                    clarificationMessage: this.getClarificationMessage(question, 'unclear_yes_no')
+                };
+            }
+        }
+    }
+
+    /**
+     * Process multiple choice answers using LLM for intelligent matching
+     * @param {string} answer - Normalized answer
+     * @param {Object} question - Current question
+     * @returns {Object} - Processed answer
+     */
+    async processMultipleChoiceAnswer(answer, question) {
+        if (!question.options) {
+            return { answer: answer, needsClarification: false };
+        }
+
+        // Try exact match first (for efficiency)
+        const exactMatch = question.options.find(option => 
+            option.toLowerCase() === answer
+        );
+        
+        if (exactMatch) {
+            return { answer: exactMatch, needsClarification: false };
+        }
+
+        // Use LLM to determine the best match
+        const llmMatch = await this.findLLMMatch(answer, question);
+        
+        if (llmMatch.matched) {
+            return { answer: llmMatch.option, needsClarification: false };
+        } else if (llmMatch.possibleMatches && llmMatch.possibleMatches.length > 1) {
+            return {
+                answer: null,
+                needsClarification: true,
+                clarificationMessage: this.getClarificationMessage(question, 'multiple_matches', llmMatch.possibleMatches)
+            };
+        }
+
+        // Fallback to traditional matching if LLM fails
+        return this.fallbackMultipleChoiceMatching(answer, question);
+    }
+
+    /**
+     * Use LLM to find the best match for a user's answer
+     * @param {string} answer - User's answer
+     * @param {Object} question - Current question
+     * @returns {Object} - Match result
+     */
+    async findLLMMatch(answer, question) {
+        try {
+            const OpenAI = require('openai');
+            const openai = new OpenAI({
+                apiKey: process.env.OPENAI_API_KEY
+            });
+
+            const systemPrompt = `You are an AI assistant that determines if a user's response matches any of the provided options for a medical question.
+
+TASK:
+- Analyze the user's response and determine which option it best matches
+- Consider medical terminology, common variations, abbreviations, and natural language
+- Handle modifiers like "severe", "moderate", "mild", "chronic", etc.
+- Be flexible with word order and phrasing
+- Consider medical abbreviations (e.g., "RA" = "Rheumatoid Arthritis")
+
+RULES:
+1. Only return a match if you are confident the user is referring to that specific option
+2. If multiple options could match, list all possibilities
+3. If no clear match exists, return null
+4. Be lenient with medical terminology variations
+5. Consider context and common medical language
+
+Return ONLY a valid JSON object with this exact format:
+{
+  "matched": true/false,
+  "option": "exact_option_text" or null,
+  "confidence": 0.0-1.0,
+  "possibleMatches": ["option1", "option2"] or [],
+  "reasoning": "brief explanation"
+}`;
+
+            const userPrompt = `Question: "${question.text}"
+
+Available options:
+${question.options.map((opt, i) => `${i + 1}. ${opt}`).join('\n')}
+
+User's response: "${answer}"
+
+Which option does the user's response match?`;
+
+            const response = await openai.chat.completions.create({
+                model: "gpt-4o-mini",
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: userPrompt }
+                ],
+                temperature: 0.1,
+                max_tokens: 300
+            });
+
+            const content = response.choices[0].message.content;
+            const result = JSON.parse(content);
+            
+            console.log(`🤖 LLM Match Analysis:`);
+            console.log(`   User: "${answer}"`);
+            console.log(`   Matched: ${result.matched}`);
+            console.log(`   Option: ${result.option}`);
+            console.log(`   Confidence: ${result.confidence}`);
+            console.log(`   Reasoning: ${result.reasoning}`);
+            
+            return result;
+            
+        } catch (error) {
+            console.error('LLM matching error:', error);
+            return {
+                matched: false,
+                option: null,
+                confidence: 0,
+                possibleMatches: [],
+                reasoning: 'LLM matching failed'
+            };
+        }
+    }
+
+    /**
+     * Fallback multiple choice matching using traditional methods
+     * @param {string} answer - Normalized answer
+     * @param {Object} question - Current question
+     * @returns {Object} - Processed answer
+     */
+    fallbackMultipleChoiceMatching(answer, question) {
+        // Try partial matches
+        const partialMatches = question.options.filter(option => 
+            option.toLowerCase().includes(answer) || answer.includes(option.toLowerCase())
+        );
+
+        if (partialMatches.length === 1) {
+            return { answer: partialMatches[0], needsClarification: false };
+        } else if (partialMatches.length > 1) {
+            return {
+                answer: null,
+                needsClarification: true,
+                clarificationMessage: this.getClarificationMessage(question, 'multiple_matches', partialMatches)
+            };
+        }
+
+        // Try fuzzy matching
+        const fuzzyMatches = question.options.map(option => ({
+            option,
+            similarity: this.calculateSimilarity(answer, option.toLowerCase())
+        })).filter(match => match.similarity >= 0.7);
+
+        if (fuzzyMatches.length === 1) {
+            return { answer: fuzzyMatches[0].option, needsClarification: false };
+        } else if (fuzzyMatches.length > 1) {
+            return {
+                answer: null,
+                needsClarification: true,
+                clarificationMessage: this.getClarificationMessage(question, 'fuzzy_matches', fuzzyMatches.map(m => m.option))
+            };
+        }
+
+        return {
+            answer: null,
+            needsClarification: true,
+            clarificationMessage: this.getClarificationMessage(question, 'invalid_option')
+        };
+    }
+
+    /**
+     * Process numeric answers with validation
+     * @param {string} answer - Normalized answer
+     * @param {Object} question - Current question
+     * @returns {Object} - Processed answer
+     */
+    processNumericAnswer(answer, question) {
+        // Extract numeric value from answer
+        const numericMatch = answer.match(/(\d+(?:\.\d+)?)/);
+        
+        if (!numericMatch) {
+            return {
+                answer: null,
+                needsClarification: true,
+                clarificationMessage: this.getClarificationMessage(question, 'not_numeric')
+            };
+        }
+
+        const numericValue = parseFloat(numericMatch[1]);
+        
+        // Validate range if specified
+        if (question.validation && question.validation.range) {
+            const { min, max } = question.validation.range;
+            if (numericValue < min || numericValue > max) {
+                return {
+                    answer: null,
+                    needsClarification: true,
+                    clarificationMessage: this.getClarificationMessage(question, 'out_of_range', { min, max, value: numericValue })
+                };
+            }
+        }
+
+        return { answer: numericValue.toString(), needsClarification: false };
+    }
+
+    /**
+     * Process text answers with minimum length validation
+     * @param {string} answer - Normalized answer
+     * @param {Object} question - Current question
+     * @returns {Object} - Processed answer
+     */
+    processTextAnswer(answer, question) {
+        const minLength = question.validation?.minLength || 3;
+        
+        if (answer.length < minLength) {
+            return {
+                answer: null,
+                needsClarification: true,
+                clarificationMessage: this.getClarificationMessage(question, 'too_short_text', { minLength })
+            };
+        }
+
+        return { answer: answer, needsClarification: false };
+    }
+
+    /**
+     * Get appropriate clarification message based on issue type
+     * @param {Object} question - Current question
+     * @param {string} issueType - Type of issue requiring clarification
+     * @param {*} additionalData - Additional data for message formatting
+     * @returns {string} - Clarification message
+     */
+    getClarificationMessage(question, issueType, additionalData = {}) {
+        const baseMessage = `I didn't quite catch that. `;
+        
+        switch (issueType) {
+            case 'too_short':
+                return `${baseMessage}Could you please provide a more detailed answer?`;
+            
+            case 'unclear_yes_no':
+                return `${baseMessage}Please answer with "yes" or "no" for this question.`;
+            
+            case 'multiple_matches':
+                const options = additionalData.join(', ');
+                return `${baseMessage}I found multiple possible matches: ${options}. Could you please be more specific?`;
+            
+            case 'fuzzy_matches':
+                const fuzzyOptions = additionalData.join(', ');
+                return `${baseMessage}Did you mean one of these: ${fuzzyOptions}? Please clarify.`;
+            
+            case 'invalid_option':
+                const validOptions = question.options ? question.options.join(', ') : 'the available options';
+                return `${baseMessage}Please choose from: ${validOptions}.`;
+            
+            case 'not_numeric':
+                return `${baseMessage}Please provide a numeric value for this question.`;
+            
+            case 'out_of_range':
+                const { min, max, value } = additionalData;
+                return `${baseMessage}The value ${value} is outside the expected range (${min}-${max}). Please provide a value within this range.`;
+            
+            case 'too_short_text':
+                const { minLength } = additionalData;
+                return `${baseMessage}Please provide a more detailed response (at least ${minLength} characters).`;
+            
+            default:
+                return `${baseMessage}Could you please repeat your answer?`;
+        }
     }
 
     /**
@@ -435,6 +779,61 @@ class SessionService {
         }
 
         return 'Based on clinical criteria evaluation';
+    }
+
+    /**
+     * Add a conversation turn to the session history
+     * @param {string} sessionId - Session identifier
+     * @param {string} speaker - 'user' or 'assistant'
+     * @param {string} message - The message content
+     */
+    addConversationTurn(sessionId, speaker, message) {
+        const session = this.getSession(sessionId);
+        if (session) {
+            session.conversationHistory.push({
+                speaker,
+                message,
+                timestamp: new Date()
+            });
+            
+            // Keep only last 20 turns to manage memory
+            if (session.conversationHistory.length > 20) {
+                session.conversationHistory = session.conversationHistory.slice(-20);
+            }
+            
+            this.updateSession(sessionId, session);
+        }
+    }
+
+    /**
+     * Build conversation context for LLM
+     * @param {string} sessionId - Session identifier
+     * @returns {Array} - Array of conversation messages
+     */
+    buildConversationContext(sessionId) {
+        const session = this.getSession(sessionId);
+        if (!session) return [];
+        
+        // Convert conversation history to OpenAI format
+        const messages = session.conversationHistory.slice(-10).map(turn => ({
+            role: turn.speaker,
+            content: turn.message
+        }));
+        
+        return messages;
+    }
+
+    /**
+     * Get recent conversation summary
+     * @param {string} sessionId - Session identifier
+     * @returns {string} - Summary of recent conversation
+     */
+    getConversationSummary(sessionId) {
+        const session = this.getSession(sessionId);
+        if (!session || session.conversationHistory.length === 0) return '';
+        
+        const recentTurns = session.conversationHistory.slice(-5);
+        return recentTurns.map(turn => `${turn.speaker}: ${turn.message}`).join('\n');
     }
 
     /**
